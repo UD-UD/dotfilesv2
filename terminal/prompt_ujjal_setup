@@ -30,7 +30,7 @@ function list_files {
   esac
 }
 
-function get_vcs_info {
+function get-vcs-info {
   vcs_info=''
   git rev-parse --is-inside-work-tree &>/dev/null || return
 
@@ -49,9 +49,9 @@ function prompt_ujjal_setup {
     prompt_opts=(cs percent subst)
 
     autoload -Uz add-zsh-hook
-    add-zsh-hook precmd get_vcs_info
+    add-zsh-hook precmd get-vcs-info
     add-zsh-hook chpwd list_files
-    add-zsh-hook chpwd get_vcs_info
+    add-zsh-hook chpwd get-vcs-info
 
       # zstyle ':omz:module:editor' completing '%B%F{red}...%f%b'
 
