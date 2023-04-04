@@ -6,9 +6,9 @@ dotfiles="$HOME/personal/dotfilesv2"
 # To benchmark startup: brew install coreutils, uncomment lines
 # echo "Load start\t" $(gdate "+%s-%N")
 
-source "$curr/terminal/start.sh"
-source "$curr/terminal/completion.sh"
-source "$curr/terminal/highlight.sh"
+source "$dotfiles/terminal/start.sh"
+source "$dotfiles/terminal/completion.sh"
+source "$dotfiles/terminal/highlight.sh"
 
 # echo "Load end\t" $(gdate "+%s-%N")
 
