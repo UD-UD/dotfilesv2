@@ -10,7 +10,7 @@
 
 vcs_info=''
 
-function prompt_precmd {
+function prompt_ujjal_precmd {
     setopt LOCAL_OPTIONS
     unsetopt XTRACE KSH_ARRAYS
 }
@@ -45,7 +45,7 @@ function get_vcs_info {
     fi
 }
 
-function prompt_setup {
+function prompt_ujjal_setup {
     setopt LOCAL_OPTIONS
     unsetopt XTRACE KSH_ARRAYS
     prompt_opts=(cs percent subst)
@@ -63,4 +63,4 @@ function prompt_setup {
   SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]? '
 }
 
-prompt_setup "$@"
+prompt_ujjal_setup "$@"
