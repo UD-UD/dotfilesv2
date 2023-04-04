@@ -15,7 +15,7 @@ source "$dotfiles/terminal/highlight.sh"
 autoload -U colors && colors
 
 # Load and execute the prompt theming system.
-fpath=("$curr/terminal" $fpath)
+fpath=("$dotfiles/terminal" $fpath)
 autoload -Uz promptinit && promptinit
 prompt 'ujjal'
 
