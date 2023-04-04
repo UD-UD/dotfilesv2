@@ -14,11 +14,9 @@ cp -f ~/.vim ~/.vimrc ~/.zshrc ~/.tmux ~/.tmux.conf ~./config/nvim  $dir/dotfile
 # remove existing dotfiles
 rm -rf ~/.zsh ~/.vim ~/.vimrc ~/.zshrc ~/.tmux ~/.tmux.conf ~/.config/nvim 2> /dev/null
 
+cd $dir
+
 git clone --recursive https://github.com/UD-UD/dotfilesv2.git
-
-cp -f dotfilesv2 dotfiles
-
-cd dotfilesv2
 
 sh install/install.sh
 
