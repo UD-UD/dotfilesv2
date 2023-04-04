@@ -29,8 +29,6 @@ for formula in "${formulas[@]}"; do
     fi
 done
 
-brew tap caskroom/cask
-
 for formula in "${cask_formulas[@]}"; do
     formula_name=$( echo "$formula" | awk '{print $1}' )
     if brew cask list "$formula_name" > /dev/null 2>&1; then
