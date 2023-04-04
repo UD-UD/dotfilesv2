@@ -263,5 +263,3 @@ alias l='ls -1A'         # Lists in one column, hidden files.
 alias ll='ls -lh'        # Lists human readable sizes.
 alias la='ll -A'         # Lists human readable sizes, hidden files.
 alias sl='ls'            # I often screw this up.
-
-echo "Start File loaded"
