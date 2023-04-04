@@ -1,6 +1,6 @@
 #!/bin/sh
 
-dev="$HOME/personal"
+dev="$HOME/dotfiles"
 dotfiles="$dev/dotfilesv2"
 
 echo ""
