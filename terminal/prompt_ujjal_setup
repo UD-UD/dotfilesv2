@@ -30,19 +30,17 @@ function list_files {
   esac
 }
 
-function get_vcs_info {
-    vsc_info=''
-    git rev-parse --is-inside-work-tree &>dev/null || return
+function get-vcs-info {
+  vcs_info=''
+  git rev-parse --is-inside-work-tree &>/dev/null || return
 
-    ## Get name of local branch
-    local ref=$(git symbolic-ref -q HEAD | sed -e 's|^refs/heads/||')
-
-    if [[ -z "$ref" ]]; then
-        vcs_info=''
-    else
-        st=`git diff --quiet --ignore-submodules HEAD &>/dev/null; [ $? -eq 1 ] && echo '*'`
-        vcs_info="%F{blue}%F{magenta}${ref}${st}%f"
-    fi
+  local ref=$(git symbolic-ref -q HEAD | sed -e 's|^refs/heads/||')
+  if [[ -z "$ref" ]]; then
+    vcs_info=''
+  else
+    st=`git diff --quiet --ignore-submodules HEAD &>/dev/null; [ $? -eq 1 ] && echo '*'`
+    vcs_info=" %F{blue}%F{magenta}${ref}${st}%f"
+  fi
 }
 
 function prompt_ujjal_setup {
