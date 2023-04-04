@@ -18,6 +18,6 @@ git clone --recursive https://github.com/UD-UD/dotfilesv2.git
 
 cd dotfilesv2
 
-sh install/install.sh
+sh installs/install.sh
 
 sh etc/symlink_dotfiles.sh
