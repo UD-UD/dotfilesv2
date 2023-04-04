@@ -41,7 +41,10 @@ for formula in "${cask_formulas[@]}"; do
 done
 
 # Install rust
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+if test ! "$( command -V rustup )"; then
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+fi
+
 
 
 
