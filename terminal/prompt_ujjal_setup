@@ -16,13 +16,15 @@ function prompt_ujjal_precmd {
 }
 
 platform="$(uname -s)"
+echo $platform
+
 function list_files {
   case "$platform" in
     Darwin)
-      echo `script -q /dev/null ls -G . | tr -d '\r' | cat`
+      ls .
       ;;
     FreeBSD)
-      echo `script -q /dev/null ls -G . | tr -d '\r' | cat`
+      echo `script -q /dev/null ls -A .`
       ;;
     *)
       ls .
