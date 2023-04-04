@@ -58,8 +58,8 @@ function prompt_ujjal_setup {
       # zstyle ':omz:module:editor' completing '%B%F{red}...%f%b'
 
   # Time: %F{yellow}%T
-  PROMPT='%F{magenta}${SSH_TTY:+%n@%m }%F{blue}%1~%f${vcs_info}%(!.%B%F{red}#%f%b.%B %(?.%F{green}.%F{red})❯%f%b) '
-  RPROMPT=''
+  PROMPT='%F{cyan}${SSH_TTY:+%n@%m }%F{blue}%1~%f${vcs_info}%(!.%B%F{red}#%f%b.%B %(?.%F{green}.%F{red})❯%f%b) '
+  RPROMPT='%F{yellow}%D%t'
   SPROMPT='zsh: correct %F{red}%R%f to %F{green}%r%f [nyae]? '
 }
 
