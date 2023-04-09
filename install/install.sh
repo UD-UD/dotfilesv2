@@ -29,15 +29,6 @@ for formula in "${formulas[@]}"; do
     fi
 done
 
-for formula in "${cask_formulas[@]}"; do
-    formula_name=$( echo "$formula" | awk '{print $1}' )
-    if brew cask list "$formula_name" > /dev/null 2>&1; then
-        echo "$formula_name already installed... skipping."
-    else
-        brew cask install "$formula"
-    fi
-done
-
 # Install rust
 if test ! "$( command -V rustup )"; then
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
