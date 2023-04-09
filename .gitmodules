@@ -4,3 +4,6 @@
 [submodule "terminal/zsh-completions"]
 	path = terminal/zsh-completions
 	url = https://github.com/zsh-users/zsh-completions.git
+[submodule "terminal/zsh-autosuggestion"]
+	path = terminal/zsh-autosuggestion
+	url = https://github.com/zsh-users/zsh-autosuggestions

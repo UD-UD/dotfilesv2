@@ -16,7 +16,6 @@ function prompt_ujjal_precmd {
 }
 
 platform="$(uname -s)"
-echo $platform
 
 function list_files {
   case "$platform" in

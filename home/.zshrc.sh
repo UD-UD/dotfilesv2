@@ -10,6 +10,7 @@ source "$dotfiles/terminal/start.sh"
 source "$dotfiles/terminal/completion.sh"
 source "$dotfiles/terminal/highlight.sh"
 source "$dotfiles/terminal/git-alias.sh"
+source "$dotfiles/terminal/zsh-autosuggestion/zsh-autosuggestions.zsh"
 
 # echo "Load end\t" $(gdate "+%s-%N")
 
@@ -33,11 +34,16 @@ alias -g SUM="| wc -l"
 alias -g H="| head"
 alias -g T="| tail"
 
+alias -g zc="rm ~/.zcompdump*"
+
 # Simple clear command.
 alias c='clear'
 
 function diff {
   git --no-pager diff --color=auto --no-ext-diff --no-index "$@"
 }
+
+freload() { while (( $# )); do; unfunction $1; autoload -U $1; shift; done }
+
 
 export GPG_TTY=$(tty)
