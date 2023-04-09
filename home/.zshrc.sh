@@ -49,3 +49,5 @@ alias gp='git push'
 function diff {
   git --no-pager diff --color=auto --no-ext-diff --no-index "$@"
 }
+
+export GPG_TTY=$(tty)

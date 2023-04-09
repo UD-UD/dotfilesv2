@@ -2,7 +2,7 @@
   name = Ujjal Dutta
   email = duttaujjal143@gmail.com
 [commit]
-  gpgsign = true
+  gpgsign = false
 [github]
   user = ud-ud
 [alias]
@@ -30,7 +30,10 @@
 [core]
   editor = code
   excludesfile = ~/.gitignore
-  pager = diff-so-fancy | less --tabs=4 -RFX
+  pager = delta
+
+[interactive]
+  diffFilter = delta --color-only
 
 [format]
   pretty = %Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)%an%Creset %C(bold yellow)%GK%Creset
@@ -64,7 +67,15 @@
   old = red bold
   new = green bold
   whitespace = red reverse
+
 [merge]
 	conflictstyle = diff3
+
 [init]
 	defaultBranch = main
+
+[diff]
+    colorMoved = default
+
+[delta]
+    line-numbers = true

@@ -5,19 +5,23 @@ if test ! "$( command -v brew )"; then
     ruby -e "$( curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install )"
 fi
 
+brew update
+# Upgrade any already-installed formulae.
+brew upgrade
+
 echo -e "\\n\\nInstalling homebrew packages"
 echo "=============================="
 
 formulas=(
+    git-delta
+    gnupg
     neovim
     python3
     node
     nvm
-)
-
-cask_formulas=(
-    java
-    visual-studio-code
+    git
+    openjdk
+    gh
 )
 
 for formula in "${formulas[@]}"; do
