@@ -12,7 +12,7 @@ mkdir -p $dir/dotfiles_bkp
 cp -f ~/.vim ~/.vimrc ~/.zshrc ~/.tmux ~/.tmux.conf ~./config/nvim  $dir/dotfiles_bkp
 
 # remove existing dotfiles
-# rm -rf ~/.zsh ~/.vim ~/.vimrc ~/.zshrc ~/.tmux ~/.tmux.conf ~/.config/nvim 2> /dev/null
+rm -rf ~/.zsh ~/.vim ~/.vimrc ~/.zshrc ~/.tmux ~/.tmux.conf ~/.config/nvim 2> /dev/null
 
 cd $dir
 
