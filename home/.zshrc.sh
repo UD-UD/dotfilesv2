@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-dotfiles="$HOME/personal/dotfilesv2"
+dotfiles="$HOME/dotfiles/dotfilesv2"
 
 # Load main files.
 # To benchmark startup: brew install coreutils, uncomment lines

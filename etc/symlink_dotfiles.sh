@@ -22,5 +22,5 @@ link() {
 for location in $(find home -name '.*'); do
   file="${location##*/}"
   file="${file%.sh}"
-  link "$dotfiles/$location" "$HOME/$file"
+  ln "$dotfiles/$location" "$HOME/$file"
 done
