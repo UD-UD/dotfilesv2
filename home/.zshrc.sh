@@ -34,7 +34,7 @@ alias -g SUM="| wc -l"
 alias -g H="| head"
 alias -g T="| tail"
 
-alias -g zc="rm ~/.zcompdump*"
+alias -g zc="rm -f ~/.zcompdump*"
 
 # Simple clear command.
 alias c='clear'
