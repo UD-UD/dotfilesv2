@@ -26,7 +26,7 @@ sh etc/symlink_dotfiles.sh
 
 echo "==================== NEXT STEPS ====================="
 
-echo "Enforce GPG signed commits by `git config --global commit.gpgsign true`"
+echo 'Enforce GPG signed commits by `git config --global commit.gpgsign true`'
 
-echo "Add your GPG key to git config by `git config --global user.signingkey XXXXXXXXXX`"
+echo 'Add your GPG key to git config by `git config --global user.signingkey XXXXXXXXXX`'
 

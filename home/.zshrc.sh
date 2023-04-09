@@ -9,6 +9,7 @@ dotfiles="$HOME/dotfiles/dotfilesv2"
 source "$dotfiles/terminal/start.sh"
 source "$dotfiles/terminal/completion.sh"
 source "$dotfiles/terminal/highlight.sh"
+source "$dotfiles/terminal/git-alias.sh"
 
 # echo "Load end\t" $(gdate "+%s-%N")
 
@@ -34,17 +35,6 @@ alias -g T="| tail"
 
 # Simple clear command.
 alias c='clear'
-# Git short-cuts.
-alias g='git'
-alias ga='git add'
-alias gr='git rm'
-alias gf='git fetch'
-alias gl='git pull'
-alias gs='git status --short'
-alias gd='git diff'
-alias gdisc='git discard'
-
-alias gp='git push'
 
 function diff {
   git --no-pager diff --color=auto --no-ext-diff --no-index "$@"
