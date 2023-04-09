@@ -11,7 +11,7 @@
 vcs_info=''
 
 function prompt_ujjal_precmd {
-    # setopt LOCAL_OPTIONS
+    setopt LOCAL_OPTIONS
     unsetopt XTRACE KSH_ARRAYS
 }
 
@@ -45,9 +45,9 @@ function get-vcs-info {
 }
 
 function prompt_ujjal_setup {
-    # setopt LOCAL_OPTIONS
+    setopt LOCAL_OPTIONS
     unsetopt XTRACE KSH_ARRAYS
-    # prompt_opts=(cs percent subst)
+    prompt_opts=(cs percent subst)
 
     autoload -Uz add-zsh-hook
     add-zsh-hook precmd get-vcs-info
