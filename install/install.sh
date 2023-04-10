@@ -5,13 +5,13 @@ if test ! "$( command -v brew )"; then
     ruby -e "$( curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install )"
 fi
 
-echo -e "============================== Updating Homebrew =============================="
+echo "============================== Updating Homebrew =============================="
 
 brew update
 # Upgrade any already-installed formulae.
 brew upgrade
 
-echo -e "============================== Installing packages =============================="
+echo "============================== Installing packages =============================="
 
 formulas=(
     git-delta
@@ -34,13 +34,10 @@ for formula in "${formulas[@]}"; do
     fi
 done
 
-echo -e "============================== Installing Rust =============================="
+echo "============================== Installing Rust =============================="
 if test ! "$( command -V rustup )"; then
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 fi
-
-echo -e "============================== Recompiling ZSH =============================="
-zc
 
 
 
