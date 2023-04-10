@@ -13,16 +13,15 @@ cp -f ~/.vim ~/.vimrc ~/.zshrc ~/.tmux ~/.tmux.conf ~./config/nvim  $dir/dotfile
 
 # remove existing dotfiles
 # rm -rf ~/.zsh ~/.vim ~/.vimrc ~/.zshrc ~/.tmux ~/.tmux.conf ~/.config/nvim 2> /dev/null
-rm -f ~/.zcompdump*
 cd $dir
 
 git clone --recursive https://github.com/UD-UD/dotfilesv2.git
 
 cd dotfilesv2
 
-sh install/install.sh
-
 sh etc/symlink_dotfiles.sh
+
+sh install/install.sh
 
 echo "==================== NEXT STEPS ====================="
 

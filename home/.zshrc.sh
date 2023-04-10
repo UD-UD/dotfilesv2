@@ -1,5 +1,6 @@
 #!/usr/bin/env zsh
 
+# zmodload zsh/zprof # uncomment when need to profile
 dotfiles="$HOME/dotfiles/dotfilesv2"
 
 # Load main files.
@@ -34,7 +35,7 @@ alias -g SUM="| wc -l"
 alias -g H="| head"
 alias -g T="| tail"
 
-alias -g zc="rm -f ~/.zcompdump*"
+alias -g zc="rm -f ~/.zcompdump*; compinit"
 
 # Simple clear command.
 alias c='clear'
@@ -47,3 +48,5 @@ freload() { while (( $# )); do; unfunction $1; autoload -U $1; shift; done }
 
 
 export GPG_TTY=$(tty)
+
+# zprof # bottom of .zshrc uncomment when need to profile
