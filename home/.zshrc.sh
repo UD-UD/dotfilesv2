@@ -1,6 +1,7 @@
 #!/usr/bin/env zsh
 
-# zmodload zsh/zprof # uncomment when need to profile
+zmodload zsh/zprof # uncomment when need to profile
+
 dotfiles="$HOME/dotfiles/dotfilesv2"
 
 # Load main files.
@@ -49,4 +50,11 @@ freload() { while (( $# )); do; unfunction $1; autoload -U $1; shift; done }
 
 export GPG_TTY=$(tty)
 
-# zprof # bottom of .zshrc uncomment when need to profile
+autoload -Uz compinit
+if [ $(date +'%j') != $(stat -f '%Sm' -t '%j' ~/.zcompdump) ]; then
+  compinit
+else
+  compinit -C
+fi
+
+zprof # bottom of .zshrc uncomment when need to profile

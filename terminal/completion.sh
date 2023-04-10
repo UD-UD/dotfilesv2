@@ -15,7 +15,7 @@ fi
 fpath=("${0:h}/zsh-completions/src" $fpath)
 
 # Load and initialize the completion system ignoring insecure directories.
-autoload -Uz compinit && compinit -i
+# autoload -Uz compinit && compinit -i
 
 #
 # Options
