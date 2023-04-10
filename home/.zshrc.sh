@@ -50,6 +50,8 @@ freload() { while (( $# )); do; unfunction $1; autoload -U $1; shift; done }
 
 export GPG_TTY=$(tty)
 
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+
 autoload -Uz compinit
 if [ $(date +'%j') != $(stat -f '%Sm' -t '%j' ~/.zcompdump) ]; then
   compinit
