@@ -1,6 +1,8 @@
 #!/usr/bin/env zsh
 
-zmodload zsh/zprof # uncomment when need to profile
+# zmodload zsh/zprof # uncomment when need to profile
+
+eval "$(~/homebrew/bin/brew shellenv)"
 
 dotfiles="$HOME/dotfiles/dotfilesv2"
 
@@ -59,4 +61,4 @@ else
   compinit -C
 fi
 
-zprof # bottom of .zshrc uncomment when need to profile
+# zprof # bottom of .zshrc uncomment when need to profile
