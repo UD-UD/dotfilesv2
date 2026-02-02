@@ -116,3 +116,156 @@ function gnew() {
   git checkout -b "$branch"
   git push -u origin "$branch"
 }
+
+# Show current git user
+function gu() {
+  local name=$(git config user.name)
+  local email=$(git config user.email)
+  local global_name=$(git config --global user.name)
+  local global_email=$(git config --global user.email)
+
+  print ""
+  print "  \033[0;36mGit User Configuration\033[0m"
+  print "  ─────────────────────────────────"
+  print ""
+  print "  \033[1;33mCurrent repo:\033[0m"
+  print "    Name:  ${name:-\033[0;35m(using global)\033[0m}"
+  print "    Email: ${email:-\033[0;35m(using global)\033[0m}"
+  print ""
+  print "  \033[1;33mGlobal:\033[0m"
+  print "    Name:  ${global_name:-\033[0;31m(not set)\033[0m}"
+  print "    Email: ${global_email:-\033[0;31m(not set)\033[0m}"
+  print ""
+}
+
+# Reset local to match remote (interactive)
+function gundo() {
+  local branch=$(current_branch)
+  local remote="${1:-origin}"
+
+  if [[ -z "$branch" ]]; then
+    print "\033[0;31mError: Not on a branch\033[0m"
+    return 1
+  fi
+
+  print ""
+  print "  \033[0;36mReset Local to Remote\033[0m"
+  print "  ─────────────────────────────────"
+  print ""
+  print "  Branch: \033[1;33m$branch\033[0m"
+  print "  Remote: \033[1;33m$remote/$branch\033[0m"
+  print ""
+
+  # Fetch latest
+  git fetch "$remote" "$branch" 2>/dev/null
+
+  # Show what will be lost
+  print "  \033[0;31m━━━ Changes that will be DISCARDED ━━━\033[0m"
+  print ""
+
+  # Modified files
+  local modified=$(git diff --name-only 2>/dev/null)
+  if [[ -n "$modified" ]]; then
+    print "  \033[1;33mModified files:\033[0m"
+    echo "$modified" | sed 's/^/    /'
+    print ""
+  fi
+
+  # Staged files
+  local staged=$(git diff --staged --name-only 2>/dev/null)
+  if [[ -n "$staged" ]]; then
+    print "  \033[1;33mStaged files:\033[0m"
+    echo "$staged" | sed 's/^/    /'
+    print ""
+  fi
+
+  # Untracked files
+  local untracked=$(git ls-files --others --exclude-standard 2>/dev/null)
+  if [[ -n "$untracked" ]]; then
+    print "  \033[1;33mUntracked files (will be DELETED):\033[0m"
+    echo "$untracked" | sed 's/^/    /'
+    print ""
+  fi
+
+  # Local commits not on remote
+  local local_commits=$(git log "$remote/$branch..HEAD" --oneline 2>/dev/null)
+  if [[ -n "$local_commits" ]]; then
+    print "  \033[1;33mLocal commits (will be LOST):\033[0m"
+    echo "$local_commits" | sed 's/^/    /'
+    print ""
+  fi
+
+  if [[ -z "$modified" && -z "$staged" && -z "$untracked" && -z "$local_commits" ]]; then
+    print "  \033[0;32mAlready in sync with remote!\033[0m"
+    print ""
+    return 0
+  fi
+
+  print "  \033[0;31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+  print ""
+  print -n "  \033[0;31mThis is DESTRUCTIVE. Proceed? [y/N]: \033[0m"
+  read response
+
+  if [[ "$response" =~ ^[Yy]$ ]]; then
+    git reset --hard "$remote/$branch"
+    git clean -fd
+    print ""
+    print "  \033[0;32m✓ Reset complete. Local now matches $remote/$branch\033[0m"
+    print ""
+  else
+    print ""
+    print "  \033[0;33mAborted.\033[0m"
+    print ""
+  fi
+}
+
+# Delete last commit from remote (interactive)
+function gundo-remote() {
+  local branch=$(current_branch)
+  local remote="${1:-origin}"
+  local num_commits="${2:-1}"
+
+  if [[ -z "$branch" ]]; then
+    print "\033[0;31mError: Not on a branch\033[0m"
+    return 1
+  fi
+
+  print ""
+  print "  \033[0;36mUndo Last Remote Commit(s)\033[0m"
+  print "  ─────────────────────────────────"
+  print ""
+  print "  Branch: \033[1;33m$branch\033[0m"
+  print "  Remote: \033[1;33m$remote\033[0m"
+  print "  Commits to remove: \033[1;33m$num_commits\033[0m"
+  print ""
+
+  # Show commits that will be removed
+  print "  \033[0;31m━━━ Commit(s) that will be REMOVED from remote ━━━\033[0m"
+  print ""
+  git log -"$num_commits" --oneline | sed 's/^/    /'
+  print ""
+  print "  \033[0;31m━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\033[0m"
+  print ""
+
+  print "  \033[0;33mThis will:\033[0m"
+  echo "    1. Reset local branch back $num_commits commit(s)"
+  echo "    2. Force push to $remote (rewriting history)"
+  print ""
+  print "  \033[0;31m⚠️  WARNING: This rewrites remote history!\033[0m"
+  print "  \033[0;31m⚠️  Others who pulled will have conflicts!\033[0m"
+  print ""
+  print -n "  \033[0;31mType 'yes' to confirm: \033[0m"
+  read response
+
+  if [[ "$response" == "yes" ]]; then
+    git reset --hard "HEAD~$num_commits"
+    git push "$remote" "$branch" --force-with-lease
+    print ""
+    print "  \033[0;32m✓ Removed $num_commits commit(s) from $remote/$branch\033[0m"
+    print ""
+  else
+    print ""
+    print "  \033[0;33mAborted.\033[0m"
+    print ""
+  fi
+}

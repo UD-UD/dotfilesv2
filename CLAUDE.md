@@ -12,16 +12,16 @@ dotfilesv2/
 │   ├── .zshrc.sh           # Main shell config (→ ~/.zshrc)
 │   ├── .zshenv.sh          # Environment vars (→ ~/.zshenv)
 │   ├── .zlogin.sh          # Login shell config (→ ~/.zlogin)
-│   ├── .gitconfig          # Git configuration (→ ~/.gitconfig)
+│   ├── .gitconfig.template # Git config template (committed, no PII)
+│   ├── .gitconfig          # Generated from template (gitignored)
 │   ├── .gitignore          # Global gitignore (→ ~/.gitignore)
+│   ├── .hushlogin          # Suppress "Last login" message (→ ~/.hushlogin)
 │   └── .config/
 │       └── starship.toml   # Prompt config (→ ~/.config/starship.toml)
 ├── terminal/               # Shell modules (sourced by .zshrc.sh)
-│   ├── start.sh            # Core options, history, aliases
+│   ├── start.sh            # Core options, history, aliases, h() help
 │   ├── completion.sh       # Zsh completion system
 │   ├── git-alias.sh        # Git shortcuts and functions
-│   ├── highlight.sh        # Syntax highlighting loader
-│   ├── prompt_ujjal_setup  # Legacy prompt (unused, kept for reference)
 │   ├── zsh-syntax-highlighting/   # Git submodule
 │   ├── zsh-autosuggestion/        # Git submodule
 │   └── zsh-completions/           # Git submodule
@@ -34,7 +34,9 @@ dotfilesv2/
 ├── git/
 │   ├── git-setup.sh        # Initialize new repos
 │   └── git-summary.sh      # Commit statistics
-└── bootstrap.sh            # Full setup for new machines
+├── setup.sh                # Remote curl installer (clones + bootstraps)
+├── bootstrap.sh            # Full setup for new machines
+└── upgrade.sh              # Update packages, plugins, and repo
 ```
 
 ## Key Files
@@ -90,6 +92,13 @@ Interactive package installer:
 1. Add file to `home/` directory
 2. Use `.sh` extension for shell files (stripped during symlink)
 3. Run `./etc/symlink_dotfiles.sh` to create links
+
+### Files with PII
+Files containing personal info (name, email) use a template pattern:
+1. `.gitconfig.template` - committed, contains placeholders
+2. `.gitconfig` - gitignored, generated during bootstrap with user's info
+
+The `bootstrap.sh` script prompts for name, email, and GitHub username, then generates `.gitconfig` from the template.
 
 ### Performance Guidelines
 - Use `command -v` instead of `which` (faster)
@@ -159,8 +168,8 @@ Edit `home/.config/starship.toml`
 
 ### Add new Homebrew package to installer
 Edit `install/install.sh`:
-1. Add to `packages` associative array with description
-2. Add to `package_order` array
+1. Add package name to `packages` array
+2. Add description to `descriptions` array (same index)
 
 ### Support new tool (like pyenv, rbenv)
 Add to `home/.zshrc.sh` with guard:
@@ -187,3 +196,20 @@ The config auto-detects its location, checking in order:
 3. `~/dotfilesv2`
 
 Set `DOTFILES` in `~/.zshrc.local` to override.
+
+## Terminal Appearance
+
+### Suppress "Last login" message
+The `.hushlogin` file in `home/` suppresses macOS's "Last login" message.
+
+### Starship prompt settings
+Key settings in `home/.config/starship.toml`:
+- `add_newline = false` - No blank line before prompt
+- Shows: directory, git branch/status, language versions, command duration
+- Minimal format for fast rendering
+
+### Colors
+- **File listings**: Controlled by `LS_COLORS` in `terminal/start.sh`
+- **Prompt colors**: Configured in `home/.config/starship.toml`
+- **Git diff colors**: Configured in `home/.gitconfig` `[color "diff"]`
+- **Syntax highlighting**: Provided by `zsh-syntax-highlighting` submodule

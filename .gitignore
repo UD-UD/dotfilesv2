@@ -1,0 +1,12 @@
+# Files with PII - use .template versions
+home/.gitconfig
+
+# Claude Code local settings (contains machine-specific paths)
+.claude/
+
+# macOS
+.DS_Store
+
+# Editor
+*.swp
+*~

@@ -177,6 +177,45 @@ if confirm "Initialize git submodules?"; then
   print_success "Submodules initialized"
 fi
 
+# ─── Git Configuration ─────────────────────────────────────────────────────
+print_header "Git Configuration"
+
+GITCONFIG_FILE="$DOTFILES_DIR/home/.gitconfig"
+GITCONFIG_TEMPLATE="$DOTFILES_DIR/home/.gitconfig.template"
+
+if [[ -f "$GITCONFIG_FILE" ]]; then
+  print_success "Git config already exists at: $GITCONFIG_FILE"
+  if confirm "Reconfigure git user info?"; then
+    CONFIGURE_GIT=true
+  else
+    CONFIGURE_GIT=false
+  fi
+else
+  echo "  Let's set up your git identity."
+  echo ""
+  CONFIGURE_GIT=true
+fi
+
+if [[ "$CONFIGURE_GIT" == true ]]; then
+  echo ""
+  read -p "  Your name (for git commits): " GIT_NAME
+  read -p "  Your email (for git commits): " GIT_EMAIL
+  read -p "  Your GitHub username: " GIT_USER
+  echo ""
+
+  # Create .gitconfig from template with user info
+  if [[ -f "$GITCONFIG_TEMPLATE" ]]; then
+    print_step "Creating git config from template..."
+    sed -e "s/Your Name/$GIT_NAME/" \
+        -e "s/your.email@example.com/$GIT_EMAIL/" \
+        -e "s/your-github-username/$GIT_USER/" \
+        "$GITCONFIG_TEMPLATE" > "$GITCONFIG_FILE"
+    print_success "Git config created with your info"
+  else
+    print_error "Template not found: $GITCONFIG_TEMPLATE"
+  fi
+fi
+
 # ─── Symlinks ───────────────────────────────────────────────────────────────
 print_header "Create Symlinks"
 

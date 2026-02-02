@@ -160,6 +160,7 @@ ${CYAN}━━━ FILE LISTING (eza) ━━━━━━━━━━━━━━�
 ${CYAN}━━━ GIT SHORTCUTS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}
 
   ${YELLOW}gs${NC}              git status -sb (short)
+  ${YELLOW}gu${NC}              Show git user (name & email)
   ${YELLOW}ga ${MAGENTA}<file>${NC}       git add
   ${YELLOW}gaa${NC}             git add --all
   ${YELLOW}gc${NC}              git commit -v
@@ -176,6 +177,8 @@ ${CYAN}━━━ GIT SHORTCUTS ━━━━━━━━━━━━━━━━�
   ${YELLOW}glog${NC}            Pretty git log graph
   ${YELLOW}gsta${NC}            git stash push
   ${YELLOW}gstp${NC}            git stash pop
+  ${YELLOW}gundo${NC}           Reset local to match remote (interactive)
+  ${YELLOW}gundo-remote${NC}    Undo last commit from remote (interactive)
 
 ${CYAN}━━━ USEFUL COMMANDS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}
 
