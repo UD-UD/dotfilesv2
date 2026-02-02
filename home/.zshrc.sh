@@ -6,14 +6,18 @@
 # Profile startup: uncomment zmodload line below and zprof at bottom
 # zmodload zsh/zprof
 
+# ─── Safety Options ─────────────────────────────────────────────────────────
+setopt NO_RM_STAR_SILENT      # Ask for confirmation on rm *
+setopt INTERACTIVE_COMMENTS   # Allow comments in interactive shells
+
 # ─── Homebrew ───────────────────────────────────────────────────────────────
 # Detect and initialize Homebrew (Apple Silicon or Intel)
 if [[ -f "/opt/homebrew/bin/brew" ]]; then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
+  eval "$(/opt/homebrew/bin/brew shellenv)" 2>/dev/null || true
 elif [[ -f "/usr/local/bin/brew" ]]; then
-  eval "$(/usr/local/bin/brew shellenv)"
+  eval "$(/usr/local/bin/brew shellenv)" 2>/dev/null || true
 elif [[ -f "$HOME/homebrew/bin/brew" ]]; then
-  eval "$($HOME/homebrew/bin/brew shellenv)"
+  eval "$($HOME/homebrew/bin/brew shellenv)" 2>/dev/null || true
 fi
 
 # ─── Dotfiles Path ──────────────────────────────────────────────────────────
@@ -55,7 +59,7 @@ source "$DOTFILES/terminal/git-alias.sh"
 
 # ─── Smart Navigation (zoxide) ──────────────────────────────────────────────
 if command -v zoxide &>/dev/null; then
-  eval "$(zoxide init zsh)"
+  eval "$(zoxide init zsh)" 2>/dev/null || true
   alias cd='z'      # Replace cd with zoxide
   alias cdi='zi'    # Interactive directory selection
 fi
@@ -87,18 +91,18 @@ fi
 
 # ─── Node.js (fnm) ──────────────────────────────────────────────────────────
 if command -v fnm &>/dev/null; then
-  eval "$(fnm env --use-on-cd)"
+  eval "$(fnm env --use-on-cd)" 2>/dev/null || true
 fi
 
 # ─── Starship Prompt (must be last before local) ────────────────────────────
 if command -v starship &>/dev/null; then
-  eval "$(starship init zsh)"
+  eval "$(starship init zsh)" 2>/dev/null || true
 fi
 
 # ─── Environment Variables ──────────────────────────────────────────────────
 export EDITOR="${EDITOR:-nvim}"
 export VISUAL="${VISUAL:-nvim}"
-export GPG_TTY=$(tty)
+export GPG_TTY="${TTY:-$(tty 2>/dev/null || echo '')}"
 
 # ─── Useful Aliases ─────────────────────────────────────────────────────────
 alias c='clear'

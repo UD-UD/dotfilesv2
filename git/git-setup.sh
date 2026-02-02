@@ -49,6 +49,18 @@ if [[ "$REPO_NAME" == */* ]]; then
   REPO_NAME="${REPO_NAME#*/}"
 fi
 
+# Validate repo name (only alphanumeric, hyphens, underscores)
+if [[ ! "$REPO_NAME" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+  print_error "Invalid repo name: '$REPO_NAME'"
+  echo ""
+  echo "Repository names should only contain:"
+  echo "  • Letters (a-z, A-Z)"
+  echo "  • Numbers (0-9)"
+  echo "  • Hyphens (-)"
+  echo "  • Underscores (_)"
+  exit 1
+fi
+
 # Check if directory already exists
 if [[ -d "$REPO_NAME" ]]; then
   print_error "Directory '$REPO_NAME' already exists"

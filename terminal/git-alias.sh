@@ -26,7 +26,7 @@ alias gco='git checkout'
 alias gcb='git checkout -b'      # Create and checkout branch
 alias gsw='git switch'           # Modern branch switching
 alias gswc='git switch -c'       # Create and switch to branch
-alias gcm='git checkout main 2>/dev/null || git checkout master'  # Checkout main/master
+alias gcom='git checkout main 2>/dev/null || git checkout master'  # Checkout main/master
 
 # ─── Remote Operations ──────────────────────────────────────────────────────
 alias gf='git fetch --all --prune'
@@ -75,16 +75,16 @@ alias gcount='git shortlog -sn'  # Commit count by author
 
 # ─── Interactive with fzf (if available) ────────────────────────────────────
 if command -v fzf &>/dev/null; then
-  # Fuzzy checkout branch
-  alias gcof='git branch --all | grep -v HEAD | sed "s/.* //" | sed "s#remotes/origin/##" | sort -u | fzf | xargs git checkout'
+  # Fuzzy checkout branch (using null-byte separation for safety)
+  alias gcof='git branch --all | grep -v HEAD | sed "s/.* //" | sed "s#remotes/origin/##" | sort -u | fzf --print0 | xargs -0 git checkout'
 
-  # Fuzzy checkout recent branches
-  alias gcor='git branch --sort=-committerdate | head -20 | fzf | xargs git checkout'
+  # Fuzzy checkout recent branches (using null-byte separation for safety)
+  alias gcor='git branch --sort=-committerdate | head -20 | fzf --print0 | xargs -0 git checkout'
 
-  # Fuzzy add files
-  alias gaf='git ls-files -m -o --exclude-standard | fzf -m | xargs git add'
+  # Fuzzy add files (using null-byte separation for safety)
+  alias gaf='git ls-files -m -o --exclude-standard -z | fzf -m --read0 --print0 | xargs -0 git add'
 
-  # Fuzzy show commit
+  # Fuzzy show commit (commits are hashes, safe without null-bytes)
   alias gshow='git log --oneline | fzf --preview "git show {1}" | awk "{print \$1}" | xargs git show'
 fi
 
@@ -268,4 +268,179 @@ function gundo-remote() {
     print "  \033[0;33mAborted.\033[0m"
     print ""
   fi
+}
+
+# ─── Multi-Identity Clone Wrapper ───────────────────────────────────────────
+# Automatically prompt for git identity on clone if multiple identities configured
+
+function _gclone_real() {
+  # Check if identities file exists
+  local identities_file="$HOME/.git-identities"
+
+  if [[ ! -f "$identities_file" ]]; then
+    # No identities configured, use normal git clone
+    command git clone "$@"
+    return $?
+  fi
+
+  # Read identities from file (skip comments and empty lines)
+  local -a identities
+  while IFS='|' read -r alias name email; do
+    [[ "$alias" =~ ^[[:space:]]*# ]] && continue  # Skip comments
+    [[ -z "$alias" ]] && continue  # Skip empty lines
+    identities+=("$alias|$name|$email")
+  done < "$identities_file"
+
+  if [[ ${#identities[@]} -eq 0 ]]; then
+    # No valid identities, use normal git clone
+    command git clone "$@"
+    return $?
+  fi
+
+  if [[ ${#identities[@]} -eq 1 ]]; then
+    # Only one identity, use it automatically
+    local identity=(${(s:|:)identities[1]})
+    local selected_alias="${identity[1]}"
+    local selected_name="${identity[2]}"
+    local selected_email="${identity[3]}"
+  else
+    # Multiple identities, prompt user to select
+    echo ""
+    echo "  Select Git Identity for this clone:"
+    echo "  ────────────────────────────────────"
+    echo ""
+
+    local i=1
+    for id in $identities; do
+      local parts=(${(s:|:)id})
+      echo "  $i) ${parts[1]} - ${parts[2]} <${parts[3]}>"
+      ((i++))
+    done
+
+    echo ""
+    echo -n "  Select [1-${#identities[@]}]: "
+    read selection
+
+    if [[ ! "$selection" =~ ^[0-9]+$ ]] || [[ $selection -lt 1 ]] || [[ $selection -gt ${#identities[@]} ]]; then
+      echo "Invalid selection. Using default git clone."
+      command git clone "$@"
+      return $?
+    fi
+
+    local selected=(${(s:|:)identities[$selection]})
+    local selected_alias="${selected[1]}"
+    local selected_name="${selected[2]}"
+    local selected_email="${selected[3]}"
+  fi
+
+  # Extract repository URL and destination from arguments
+  local clone_url=""
+  local clone_dest=""
+  local -a git_args=()
+
+  # Parse arguments (handle various git clone formats)
+  for arg in "$@"; do
+    if [[ "$arg" =~ ^(https?://|git://|ssh://|git@|[^@]+@[^:]+:) ]]; then
+      clone_url="$arg"
+    elif [[ "$arg" =~ ^- ]]; then
+      git_args+=("$arg")
+    elif [[ -n "$clone_url" ]] && [[ -z "$clone_dest" ]]; then
+      clone_dest="$arg"
+    else
+      git_args+=("$arg")
+    fi
+  done
+
+  # Execute git clone
+  echo ""
+  echo "Cloning with identity: $selected_alias"
+
+  if [[ -n "$clone_dest" ]]; then
+    command git clone "${git_args[@]}" "$clone_url" "$clone_dest"
+  else
+    command git clone "${git_args[@]}" "$clone_url"
+  fi
+
+  local clone_status=$?
+  if [[ $clone_status -ne 0 ]]; then
+    return $clone_status
+  fi
+
+  # Determine actual clone destination
+  local repo_dir
+  if [[ -n "$clone_dest" ]]; then
+    repo_dir="$clone_dest"
+  else
+    # Extract repo name from URL
+    repo_dir=$(basename "$clone_url" .git)
+  fi
+
+  # Set local git config in the cloned repository
+  if [[ -d "$repo_dir" ]]; then
+    (
+      cd "$repo_dir" || return 1
+      git config user.name "$selected_name"
+      git config user.email "$selected_email"
+
+      echo ""
+      echo "  ✓ Git identity configured:"
+      echo "    Name:  $selected_name"
+      echo "    Email: $selected_email"
+      echo ""
+    )
+  fi
+}
+
+# Identity-aware clone (use 'gclone' instead of 'git clone' when you want identity selection)
+alias gclone='_gclone_real'
+
+# ─── Identity Management Helpers ────────────────────────────────────────────
+
+# List configured git identities
+function gidentities() {
+  local identities_file="$HOME/.git-identities"
+
+  if [[ ! -f "$identities_file" ]]; then
+    echo "No git identities configured."
+    echo "Run bootstrap.sh to set up identities."
+    return 1
+  fi
+
+  echo ""
+  echo "  Configured Git Identities"
+  echo "  ─────────────────────────────────"
+  echo ""
+
+  while IFS='|' read -r alias name email; do
+    [[ "$alias" =~ ^[[:space:]]*# ]] && continue
+    [[ -z "$alias" ]] && continue
+    echo "  • $alias - $name <$email>"
+  done < "$identities_file"
+
+  echo ""
+}
+
+# Add a new git identity
+function gidentity-add() {
+  local identities_file="$HOME/.git-identities"
+
+  # Create file if it doesn't exist
+  if [[ ! -f "$identities_file" ]]; then
+    cat > "$identities_file" << 'EOF'
+# Git Identities - Auto-generated by bootstrap.sh
+# Format: ALIAS|Name|Email
+# Example: PERSONAL|John Doe|john@personal.com
+EOF
+    chmod 600 "$identities_file"
+  fi
+
+  echo ""
+  read "alias?  Identity alias (e.g., 'work', 'personal'): "
+  read "name?  Your name for this identity: "
+  read "email?  Your email for this identity: "
+
+  echo "$alias|$name|$email" >> "$identities_file"
+  echo ""
+  echo "  ✓ Identity '$alias' added"
+  echo ""
 }

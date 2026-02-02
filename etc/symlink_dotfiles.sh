@@ -28,6 +28,19 @@ fi
 link() {
   local from="$1"
   local to="$2"
+
+  # Warn if overwriting a real file (not a symlink)
+  if [[ -f "$to" ]] && [[ ! -L "$to" ]]; then
+    echo ""
+    echo "  Warning: '$to' exists and is not a symlink."
+    echo "  This is a real file that will be overwritten!"
+    read -p "  Replace with symlink? [y/N] " confirm
+    if [[ ! "$confirm" =~ ^[Yy]$ ]]; then
+      echo "  Skipping: $to"
+      return
+    fi
+  fi
+
   echo "  Linking: $to -> $from"
 
   # Create parent directory if needed

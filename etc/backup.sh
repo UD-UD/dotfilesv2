@@ -12,7 +12,11 @@ if [[ -f "./home/.zshrc.sh" ]]; then
 fi
 
 echo "Creating backup at: $BACKUP_DIR"
-mkdir -p "$BACKUP_DIR"
+if ! mkdir -p "$BACKUP_DIR"; then
+  echo "Error: Failed to create backup directory: $BACKUP_DIR"
+  echo "Check disk space and permissions."
+  exit 1
+fi
 
 # Backup dotfiles repo files
 echo "Backing up dotfiles repo..."

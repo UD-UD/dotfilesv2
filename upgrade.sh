@@ -116,6 +116,29 @@ echo "    • zsh-completions"
 echo ""
 
 if confirm "Update plugins to latest versions?"; then
+  print_step "Verifying submodule URLs..."
+
+  # Verify submodule URLs match expected sources (security check)
+  expected_urls=(
+    "https://github.com/zsh-users/zsh-syntax-highlighting"
+    "https://github.com/zsh-users/zsh-autosuggestions"
+    "https://github.com/zsh-users/zsh-completions"
+  )
+
+  if [[ -f ".gitmodules" ]]; then
+    for expected_url in "${expected_urls[@]}"; do
+      if ! grep -q "$expected_url" .gitmodules; then
+        print_error "Security: Unexpected submodule URL detected in .gitmodules"
+        print_error "Expected URLs: ${expected_urls[*]}"
+        echo ""
+        echo "Current .gitmodules content:"
+        cat .gitmodules
+        exit 1
+      fi
+    done
+    print_success "Submodule URLs verified"
+  fi
+
   print_step "Updating submodules..."
   git submodule update --init --recursive
   git submodule update --remote --merge

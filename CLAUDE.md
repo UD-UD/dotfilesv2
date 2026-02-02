@@ -179,6 +179,26 @@ if command -v newtool &>/dev/null; then
 fi
 ```
 
+### Manage Multiple Git Identities
+
+If you have multiple GitHub accounts (personal, work, etc.), the bootstrap script can configure them all. On every `git clone`, you'll be prompted to select which identity to use.
+
+**During bootstrap:**
+- Answer "yes" to "Do you have multiple GitHub identities?"
+- Enter each identity (alias, name, email)
+
+**Managing identities later:**
+```bash
+gidentities      # List all configured identities
+gidentity-add    # Add a new identity
+```
+
+**How it works:**
+- Identities stored in `~/.git-identities`
+- `git clone` automatically prompts for identity selection
+- Selected identity is set in local repo config (not global)
+- Your global `.gitconfig` uses the first identity you configured
+
 ## Environment
 
 - **Shell**: Zsh (macOS default)

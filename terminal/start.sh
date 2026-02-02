@@ -35,6 +35,11 @@ HISTFILE="${ZDOTDIR:-$HOME}/.zhistory"
 HISTSIZE=50000              # Increased for modern systems
 SAVEHIST=50000
 
+# Ensure history file has secure permissions (may contain sensitive commands)
+if [[ -f "$HISTFILE" ]]; then
+  chmod 600 "$HISTFILE"
+fi
+
 setopt BANG_HIST            # Treat the '!' character specially during expansion.
 setopt EXTENDED_HISTORY     # Write the history file in the ':start:elapsed;command' format.
 setopt INC_APPEND_HISTORY   # Write to the history file immediately, not when the shell exits.
@@ -176,6 +181,26 @@ ${CYAN}━━━ GIT SHORTCUTS ━━━━━━━━━━━━━━━━�
   ${YELLOW}gstp${NC}            git stash pop
   ${YELLOW}gundo${NC}           Reset local to match remote (interactive)
   ${YELLOW}gundo-remote${NC}    Undo last commit from remote (interactive)
+
+${CYAN}━━━ GIT IDENTITY MANAGEMENT (Multi-Account Support) ━━━━━━━━━━━━━━━━━━━━━━━━━${NC}
+
+  ${GREEN}For multiple GitHub accounts (personal, work, client, etc.)${NC}
+
+  ${YELLOW}git clone${NC} ${MAGENTA}<url>${NC}  Prompts for identity selection on every clone
+  ${YELLOW}gidentities${NC}     List all configured identities
+  ${YELLOW}gidentity-add${NC}   Add a new identity (alias, name, email)
+
+  ${GREEN}How it works:${NC}
+    • Configure during bootstrap or use ${YELLOW}gidentity-add${NC}
+    • Identities stored in ${MAGENTA}~/.git-identities${NC}
+    • Each clone prompts: "Which identity?" (personal, work, etc.)
+    • Selected identity set in ${GREEN}local${NC} repo config (not global)
+    • Example: Clone work repo → select "work" → commits use work email
+
+  ${GREEN}Setup:${NC}
+    • Run ${YELLOW}./bootstrap.sh${NC} → Answer "yes" to multiple identities
+    • Or add later with ${YELLOW}gidentity-add${NC}
+    • View configured identities: ${YELLOW}gidentities${NC}
 
 ${CYAN}━━━ USEFUL COMMANDS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}
 

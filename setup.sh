@@ -49,6 +49,11 @@ if [[ -d "$DOTFILES_DIR" ]]; then
   echo ""
   read -p "  Remove and reinstall? [y/N] " response
   if [[ "$response" =~ ^[Yy]$ ]]; then
+    # Sanity check - ensure it's a reasonable path
+    if [[ -z "$DOTFILES_DIR" ]] || [[ "$DOTFILES_DIR" == "/" ]] || [[ "$DOTFILES_DIR" == "$HOME" ]]; then
+      echo -e "${RED}Error: Invalid removal path. Will not remove: $DOTFILES_DIR${NC}"
+      exit 1
+    fi
     echo -e "  ${CYAN}→${NC} Removing existing directory..."
     rm -rf "$DOTFILES_DIR"
   else

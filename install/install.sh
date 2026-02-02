@@ -109,7 +109,11 @@ if command -v brew &>/dev/null; then
   echo "  Version: $BREW_VERSION"
 else
   print_warning "Homebrew is not installed"
-  if confirm "Install Homebrew?"; then
+  echo ""
+  echo -e "  ${YELLOW}⚠️  About to download and execute Homebrew installer from GitHub${NC}"
+  echo "     You can review it at: https://github.com/Homebrew/install/blob/HEAD/install.sh"
+  echo ""
+  if confirm "Continue with Homebrew installation?"; then
     print_step "Installing Homebrew..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
