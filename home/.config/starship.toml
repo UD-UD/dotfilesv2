@@ -6,13 +6,13 @@ add_newline = false
 
 # Prompt format - show only what matters
 format = """
+$nodejs\
+$python\
+$rust\
 ${custom.gituser}\
 $directory\
 $git_branch\
 $git_status\
-$nodejs\
-$python\
-$rust\
 $cmd_duration\
 $character"""
 
@@ -62,20 +62,20 @@ format = "[$duration]($style) "
 style = "bold yellow"
 
 [nodejs]
-format = "[$symbol($version )]($style)"
+format = "[$symbol]( $style)"
 symbol = "⬢ "
 style = "bold green"
 detect_files = ["package.json", ".nvmrc", ".node-version"]
 detect_folders = ["node_modules"]
 
 [python]
-format = '[${symbol}(${version} )(\($virtualenv\) )]($style)'
+format = '[${symbol}( \($virtualenv\) )]($style)'
 symbol = "🐍 "
 style = "bold yellow"
 detect_files = ["requirements.txt", "pyproject.toml", "setup.py", "Pipfile", ".python-version"]
 
 [rust]
-format = "[$symbol($version )]($style)"
+format = "[$symbol( )]($style)"
 symbol = "🦀 "
 style = "bold red"
 
