@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(git submodule:*)",
+      "Bash(du:*)",
+      "Bash(chmod:*)",
+      "Bash(./etc/backup.sh:*)",
+      "Bash(/Users/ujjal.dutta/dotfilesv2/etc/symlink_dotfiles.sh)"
+    ]
+  }
+}

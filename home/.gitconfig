@@ -9,7 +9,7 @@
   discard = reset --hard HEAD
   ch = checkout
   sign = commit -S -m
-  signtag = 'tag -s -m ""'
+  signtag = "tag -s -m"
   d = diff
 
   graph = log --graph
@@ -17,12 +17,13 @@
   whois = "!sh -c 'git log -i -1 --pretty=\"format:%an <%ae>\n\" --author=\"$1\"' -"
   rmtag = "!sh -c 'git tag -d $1; git push origin :refs/tags/$1'"
 
-  setup     = !zsh "$HOME/Developer/personal/dotfiles/git-extras/git-setup.sh"
-  summary   = !zsh "$HOME/Developer/personal/dotfiles/git-extras/git-summary.sh"
+  setup     = "!bash \"$HOME/dotfilesv2/git/git-setup.sh\""
+  summary   = "!bash \"$HOME/dotfilesv2/git/git-summary.sh\""
   pr = "!f() { git fetch -fu ${2:-origin} refs/pull/$1/head:pr/$1; } ; f"
 
 [push]
-  default = simple
+  default = current
+  autoSetupRemote = true
 
 [color]
   ui = true
@@ -47,6 +48,18 @@
 
 [pull]
   rebase = true
+
+[fetch]
+  prune = true
+
+[rebase]
+  autoStash = true
+
+[rerere]
+  enabled = true
+
+[branch]
+  sort = -committerdate
 
 [filter "lfs"]
   clean = git-lfs clean -- %f

@@ -1,0 +1,80 @@
+# Starship Prompt Configuration
+# Fast, minimal, informative
+
+# Don't add blank line before prompt
+add_newline = false
+
+# Prompt format - show only what matters
+format = """
+$directory\
+$git_branch\
+$git_status\
+$nodejs\
+$python\
+$rust\
+$cmd_duration\
+$character"""
+
+# Right prompt (optional - uncomment if you want time on the right)
+# right_format = "$time"
+
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+vimcmd_symbol = "[❮](bold green)"
+
+[directory]
+truncation_length = 3
+truncate_to_repo = true
+style = "bold cyan"
+read_only = " "
+
+[git_branch]
+format = "[$symbol$branch]($style) "
+symbol = ""
+style = "bold purple"
+
+[git_status]
+format = '([$all_status$ahead_behind]($style) )'
+style = "bold red"
+conflicted = "="
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+untracked = "?"
+stashed = "$"
+modified = "!"
+staged = "+"
+renamed = "»"
+deleted = "✘"
+
+[cmd_duration]
+min_time = 2_000  # Show if command took > 2 seconds
+format = "[$duration]($style) "
+style = "bold yellow"
+
+[nodejs]
+format = "[$symbol($version )]($style)"
+symbol = "⬢ "
+style = "bold green"
+detect_files = ["package.json", ".nvmrc", ".node-version"]
+detect_folders = ["node_modules"]
+
+[python]
+format = '[${symbol}(${version} )(\($virtualenv\) )]($style)'
+symbol = "🐍 "
+style = "bold yellow"
+detect_files = ["requirements.txt", "pyproject.toml", "setup.py", "Pipfile", ".python-version"]
+
+[rust]
+format = "[$symbol($version )]($style)"
+symbol = "🦀 "
+style = "bold red"
+
+[package]
+disabled = true  # Disable package version (slow)
+
+[time]
+disabled = true  # Enable if you want time in right prompt
+format = "[$time]($style) "
+style = "bold dimmed white"

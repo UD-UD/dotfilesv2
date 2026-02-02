@@ -1,89 +1,118 @@
-# Aliases
+#
+# Git Aliases - Optimized for fast workflow
+#
+
+# ─── Core Commands ──────────────────────────────────────────────────────────
 alias g='git'
-# compdef g=git
-alias gst='git status'
-# compdef _git gst=git-status
-alias gl='git pull'
-# compdef _git gl=git-pull
-alias gup='git fetch && git rebase'
-# compdef _git gup=git-fetch
-alias gp='git push'
-# compdef _git gp=git-push
-gdv() { git diff -w "$@" | view - }
-# compdef _git gdv=git-diff
-alias gc='git commit -v'
-# compdef _git gc=git-commit
-alias gca='git commit -v -a'
-# compdef _git gca=git-commit
-alias gco='git checkout'
-# compdef _git gco=git-checkout
-alias gcm='git checkout master'
-alias gb='git branch'
-# compdef _git gb=git-branch
-alias gba='git branch -a'
-# compdef _git gba=git-branch
-alias gcount='git shortlog -sn'
-# compdef gcount=git
-alias gcp='git cherry-pick'
-# compdef _git gcp=git-cherry-pick
-alias glg='git log --stat --max-count=5'
-# compdef _git glg=git-log
-alias glgg='git log --graph --max-count=5'
-# compdef _git glgg=git-log
-alias gss='git status -s'
-# compdef _git gss=git-status
+alias gs='git status -sb'        # Short status with branch info
+alias gst='git status'           # Full status
+
+# ─── Staging & Commits ──────────────────────────────────────────────────────
 alias ga='git add'
-# compdef _git ga=git-add
-
 alias gaa='git add --all'
-# compdef _git gaa='git-add --all'
+alias gap='git add --patch'      # Interactive staging
+alias gc='git commit -v'
+alias gca='git commit -v --amend'
+alias gcm='git commit -m'
+alias gcam='git commit -a -m'    # Add all and commit with message
 
+# ─── Branches ───────────────────────────────────────────────────────────────
+alias gb='git branch'
+alias gba='git branch -a'        # All branches (local + remote)
+alias gbl='git branch -vv'       # Verbose with upstream info
+alias gbd='git branch -d'        # Delete (safe)
+alias gbD='git branch -D'        # Delete (force)
+alias gco='git checkout'
+alias gcb='git checkout -b'      # Create and checkout branch
+alias gsw='git switch'           # Modern branch switching
+alias gswc='git switch -c'       # Create and switch to branch
+alias gcm='git checkout main 2>/dev/null || git checkout master'  # Checkout main/master
+
+# ─── Remote Operations ──────────────────────────────────────────────────────
+alias gf='git fetch --all --prune'
+alias gl='git pull --rebase'
+alias gp='git push'
+alias gpf='git push --force-with-lease'  # Safer force push
+alias gpo='git push origin'
+alias gpu='git push -u origin HEAD'      # Push and set upstream
+
+# ─── Diff & Log ─────────────────────────────────────────────────────────────
+alias gd='git diff'
+alias gds='git diff --staged'
+alias gdt='git difftool'
+alias glog='git log --oneline --graph --decorate -20'
+alias gloga='git log --oneline --graph --decorate --all'
+alias glol='git log --graph --pretty="%Cred%h%Creset -%C(auto)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset"'
+
+# ─── Stash ──────────────────────────────────────────────────────────────────
+alias gsta='git stash push'
+alias gstp='git stash pop'
+alias gstl='git stash list'
+alias gstd='git stash drop'
+alias gsts='git stash show --patch'
+
+# ─── Merge & Rebase ─────────────────────────────────────────────────────────
 alias gm='git merge'
-# compdef _git gm=git-merge
+alias grb='git rebase'
+alias grba='git rebase --abort'
+alias grbc='git rebase --continue'
+alias grbi='git rebase -i'       # Interactive rebase
+
+# ─── Reset & Clean ──────────────────────────────────────────────────────────
 alias grh='git reset HEAD'
 alias grhh='git reset HEAD --hard'
+alias gclean='git clean -fd'     # Remove untracked files and directories
+alias gdisc='git checkout -- .'  # Discard all changes (alias for git discard in .gitconfig)
 
-# Git and svn mix
-alias git-svn-dcommit-push='git svn dcommit && git push github master:svntrunk'
-# compdef git-svn-dcommit-push=git
+# ─── Cherry-pick ────────────────────────────────────────────────────────────
+alias gcp='git cherry-pick'
+alias gcpa='git cherry-pick --abort'
+alias gcpc='git cherry-pick --continue'
 
-alias gsr='git svn rebase'
-alias gsd='git svn dcommit'
-#
-# Will return the current branch name
-# Usage example: git pull origin $(current_branch)
-#
+# ─── Misc ───────────────────────────────────────────────────────────────────
+alias gr='git remote -v'
+alias gcount='git shortlog -sn'  # Commit count by author
+
+# ─── Interactive with fzf (if available) ────────────────────────────────────
+if command -v fzf &>/dev/null; then
+  # Fuzzy checkout branch
+  alias gcof='git branch --all | grep -v HEAD | sed "s/.* //" | sed "s#remotes/origin/##" | sort -u | fzf | xargs git checkout'
+
+  # Fuzzy checkout recent branches
+  alias gcor='git branch --sort=-committerdate | head -20 | fzf | xargs git checkout'
+
+  # Fuzzy add files
+  alias gaf='git ls-files -m -o --exclude-standard | fzf -m | xargs git add'
+
+  # Fuzzy show commit
+  alias gshow='git log --oneline | fzf --preview "git show {1}" | awk "{print \$1}" | xargs git show'
+fi
+
+# ─── Helper Functions ───────────────────────────────────────────────────────
+# Get current branch name
 function current_branch() {
-  ref=$(git symbolic-ref HEAD 2> /dev/null) || return
-  echo ${ref#refs/heads/}
+  git symbolic-ref --short HEAD 2>/dev/null
 }
 
-function current_repository() {
-
-  ref=$(git symbolic-ref HEAD 2> /dev/null) || return
-  echo $(git remote -v | cut -d':' -f 2)
+# Push current branch to origin
+function ggpush() {
+  git push origin "$(current_branch)" "$@"
 }
 
-# these aliases take advantage of the previous function
-alias ggpull='git pull origin $(current_branch)'
-# compdef ggpull=git
-alias ggpush='git push origin $(current_branch)'
-# compdef ggpush=git
-alias ggpnp='git pull origin $(current_branch) && git push origin $(current_branch)'
-# compdef ggpnp=git
+# Pull current branch from origin with rebase
+function ggpull() {
+  git pull --rebase origin "$(current_branch)" "$@"
+}
 
-
-alias gr='git rm'
-# compdef _git gr=git-status
-
-alias gf='git fetch'
-# compdef _git gf=git-status
-
-alias gss='git status --short'
-# compdef _git gss=git-status
-
-alias gd='git diff'
-# compdef _git gd=git-status
-
-alias gdisc='git discard'
-# compdef _git gdisc=git-status
+# Create a new branch from main/master and push
+function gnew() {
+  local branch="$1"
+  if [[ -z "$branch" ]]; then
+    echo "Usage: gnew <branch-name>"
+    return 1
+  fi
+  git checkout main 2>/dev/null || git checkout master
+  git pull --rebase
+  git checkout -b "$branch"
+  git push -u origin "$branch"
+}

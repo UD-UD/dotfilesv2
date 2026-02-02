@@ -1,64 +1,126 @@
 #!/usr/bin/env zsh
+#
+# Zsh Configuration - Optimized for macOS (Apple Silicon)
+# Target startup time: <100ms
+#
+# Profile startup: uncomment zmodload line below and zprof at bottom
+# zmodload zsh/zprof
 
-# zmodload zsh/zprof # uncomment when need to profile
+# ─── Homebrew ───────────────────────────────────────────────────────────────
+# Detect and initialize Homebrew (Apple Silicon or Intel)
+if [[ -f "/opt/homebrew/bin/brew" ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -f "/usr/local/bin/brew" ]]; then
+  eval "$(/usr/local/bin/brew shellenv)"
+elif [[ -f "$HOME/homebrew/bin/brew" ]]; then
+  eval "$($HOME/homebrew/bin/brew shellenv)"
+fi
 
-eval "$(~/homebrew/bin/brew shellenv)"
+# ─── Dotfiles Path ──────────────────────────────────────────────────────────
+# Auto-detect dotfiles location
+if [[ -n "$DOTFILES" ]]; then
+  : # Use existing DOTFILES env var
+elif [[ -d "$HOME/dotfiles/dotfilesv2" ]]; then
+  DOTFILES="$HOME/dotfiles/dotfilesv2"
+elif [[ -d "$HOME/dotfilesv2" ]]; then
+  DOTFILES="$HOME/dotfilesv2"
+else
+  DOTFILES="$HOME/dotfiles/dotfilesv2"  # Fallback
+fi
+export DOTFILES
 
-dotfiles="$HOME/dotfiles/dotfilesv2"
+# ─── Core Configuration ─────────────────────────────────────────────────────
+source "$DOTFILES/terminal/start.sh"
 
-# Load main files.
-# To benchmark startup: brew install coreutils, uncomment lines
-# echo "Load start\t" $(gdate "+%s-%N")
+# ─── Completions ────────────────────────────────────────────────────────────
+# Add zsh-completions to fpath before compinit
+fpath=("$DOTFILES/terminal/zsh-completions/src" $fpath)
+source "$DOTFILES/terminal/completion.sh"
 
-source "$dotfiles/terminal/start.sh"
-source "$dotfiles/terminal/completion.sh"
-source "$dotfiles/terminal/highlight.sh"
-source "$dotfiles/terminal/git-alias.sh"
-source "$dotfiles/terminal/zsh-autosuggestion/zsh-autosuggestions.zsh"
+# ─── Syntax Highlighting ────────────────────────────────────────────────────
+# Must be sourced before zsh-autosuggestions for proper interaction
+if [[ -f "$DOTFILES/terminal/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
+  source "$DOTFILES/terminal/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+fi
 
-# echo "Load end\t" $(gdate "+%s-%N")
+# ─── Autosuggestions ────────────────────────────────────────────────────────
+if [[ -f "$DOTFILES/terminal/zsh-autosuggestion/zsh-autosuggestions.zsh" ]]; then
+  source "$DOTFILES/terminal/zsh-autosuggestion/zsh-autosuggestions.zsh"
+  ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+  ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
+fi
 
-autoload -U colors && colors
+# ─── Git Aliases ────────────────────────────────────────────────────────────
+source "$DOTFILES/terminal/git-alias.sh"
 
-# Load and execute the prompt theming system.
-fpath=("$dotfiles/terminal" $fpath)
-autoload -Uz promptinit && promptinit
-prompt 'ujjal'
+# ─── Smart Navigation (zoxide) ──────────────────────────────────────────────
+if command -v zoxide &>/dev/null; then
+  eval "$(zoxide init zsh)"
+  alias cd='z'      # Replace cd with zoxide
+  alias cdi='zi'    # Interactive directory selection
+fi
 
-# The icrnl setting tells the terminal driver in the kernel 
-# to convert the CR character to LF on input. This way, applications only need to worry about one newline character;
-# the same newline character that ends lines in files also ends lines of user input on the terminal, so the application doesn't need to have a special case for that.
-# Fixes <Return> key bugs with some secure keyboards etc
-stty icrnl
+# ─── Fuzzy Finder (fzf) ─────────────────────────────────────────────────────
+if command -v fzf &>/dev/null; then
+  # fzf 0.48+ uses this method
+  if [[ -f "$HOMEBREW_PREFIX/opt/fzf/shell/completion.zsh" ]]; then
+    source "$HOMEBREW_PREFIX/opt/fzf/shell/completion.zsh"
+    source "$HOMEBREW_PREFIX/opt/fzf/shell/key-bindings.zsh"
+  else
+    # Fallback for newer fzf versions
+    source <(fzf --zsh 2>/dev/null) || true
+  fi
 
+  # fzf configuration
+  export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --info=inline'
+  export FZF_CTRL_T_OPTS='--preview "bat --color=always --style=numbers --line-range=:500 {} 2>/dev/null || cat {}"'
+  export FZF_ALT_C_OPTS='--preview "eza --tree --color=always {} 2>/dev/null || ls -la {}"'
+fi
 
-alias -g CNT="| wc -l"
-alias -g COUNT="| wc -l"
-alias -g SUM="| wc -l"
-alias -g H="| head"
-alias -g T="| tail"
+# ─── Node.js (fnm) ──────────────────────────────────────────────────────────
+if command -v fnm &>/dev/null; then
+  eval "$(fnm env --use-on-cd)"
+fi
 
-alias -g zc="rm -f ~/.zcompdump*; compinit"
+# ─── Starship Prompt (must be last before local) ────────────────────────────
+if command -v starship &>/dev/null; then
+  eval "$(starship init zsh)"
+fi
 
-# Simple clear command.
+# ─── Environment Variables ──────────────────────────────────────────────────
+export EDITOR="${EDITOR:-nvim}"
+export VISUAL="${VISUAL:-nvim}"
+export GPG_TTY=$(tty)
+
+# ─── Useful Aliases ─────────────────────────────────────────────────────────
 alias c='clear'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
 
-function diff {
+# Pipe shortcuts
+alias -g H='| head'
+alias -g T='| tail'
+alias -g G='| grep'
+alias -g L='| less'
+alias -g CNT='| wc -l'
+
+# Quick edit configs
+alias zshrc='${EDITOR:-nvim} ~/.zshrc'
+alias zshreload='exec zsh'
+alias zc='rm -f ~/.zcompdump*; exec zsh'  # Clear completion cache
+
+# Diff function using git's diff
+function diff() {
   git --no-pager diff --color=auto --no-ext-diff --no-index "$@"
 }
 
-freload() { while (( $# )); do; unfunction $1; autoload -U $1; shift; done }
+# Terminal settings
+stty icrnl  # Fixes <Return> key issues with some keyboards
 
+# ─── Local Overrides ────────────────────────────────────────────────────────
+# Source local customizations (not tracked in git)
+[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
 
-export GPG_TTY=$(tty)
-
-ZSH_AUTOSUGGEST_STRATEGY=(history completion)
-
-autoload -Uz compinit
-if [ $(date +'%j') != $(stat -f '%Sm' -t '%j' ~/.zcompdump) ]; then
-  compinit
-else
-  compinit -C
-fi
-
-# zprof # bottom of .zshrc uncomment when need to profile
+# ─── Profiling (uncomment to debug slow startup) ────────────────────────────
+# zprof
