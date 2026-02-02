@@ -71,7 +71,15 @@ if command -v fzf &>/dev/null; then
     source <(fzf --zsh 2>/dev/null) || true
   fi
 
-  # fzf configuration
+  # fzf configuration - use fd for speed and to exclude sensitive directories
+  FZF_EXCLUDES="--exclude .git --exclude .ssh --exclude .gnupg --exclude node_modules --exclude .env --exclude Library --exclude .cache"
+
+  if command -v fd &>/dev/null; then
+    export FZF_DEFAULT_COMMAND="fd --type f --hidden --follow $FZF_EXCLUDES"
+    export FZF_CTRL_T_COMMAND="fd --type f --hidden --follow $FZF_EXCLUDES"
+    export FZF_ALT_C_COMMAND="fd --type d --hidden --follow $FZF_EXCLUDES"
+  fi
+
   export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border --info=inline'
   export FZF_CTRL_T_OPTS='--preview "bat --color=always --style=numbers --line-range=:500 {} 2>/dev/null || cat {}"'
   export FZF_ALT_C_OPTS='--preview "eza --tree --color=always {} 2>/dev/null || ls -la {}"'

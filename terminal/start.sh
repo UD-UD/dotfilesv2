@@ -3,9 +3,6 @@
 # Optimized for fast startup on macOS
 #
 
-# ─── Prezto-style Settings ──────────────────────────────────────────────────
-zstyle ':prezto:*:*' case-sensitive 'no'
-zstyle ':prezto:*:*' color 'yes'
 
 # ─── Directory Navigation ───────────────────────────────────────────────────
 setopt AUTO_CD              # Auto changes to a directory without typing cd.
