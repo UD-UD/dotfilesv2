@@ -212,6 +212,8 @@ ${CYAN}━━━ USEFUL COMMANDS ━━━━━━━━━━━━━━━�
 
 ${CYAN}━━━ SHELL MANAGEMENT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}
 
+  ${YELLOW}aa${NC}              Add new alias (opens ~/.zshrc.local)
+  ${YELLOW}aev${NC}             Add environment variable (opens ~/.secrets)
   ${YELLOW}zshrc${NC}           Edit ~/.zshrc
   ${YELLOW}zshreload${NC}       Reload shell config
   ${YELLOW}zc${NC}              Clear completion cache & reload

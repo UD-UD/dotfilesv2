@@ -76,7 +76,7 @@ if command -v fzf &>/dev/null; then
   fi
 
   # fzf configuration - use fd for speed and to exclude sensitive directories
-  FZF_EXCLUDES="--exclude .git --exclude .ssh --exclude .gnupg --exclude node_modules --exclude .env --exclude Library --exclude .cache"
+  FZF_EXCLUDES="--exclude .git --exclude .ssh --exclude .gnupg --exclude node_modules --exclude .env --exclude .secrets --exclude Library --exclude .cache"
 
   if command -v fd &>/dev/null; then
     export FZF_DEFAULT_COMMAND="fd --type f --hidden --follow $FZF_EXCLUDES"
@@ -122,6 +122,101 @@ alias zshrc='${EDITOR:-nvim} ~/.zshrc'
 alias zshreload='exec zsh'
 alias zc='rm -f ~/.zcompdump*; exec zsh'  # Clear completion cache
 
+# Add new alias helper (aa = add alias)
+# Opens ~/.zshrc.local for machine-specific aliases
+function aa() {
+  local local_config="$HOME/.zshrc.local"
+
+  # Create ~/.zshrc.local with template if it doesn't exist
+  if [[ ! -f "$local_config" ]]; then
+    cat > "$local_config" << 'EOF'
+#
+# Machine-Specific Zsh Configuration
+# This file is sourced by ~/.zshrc and is NOT version controlled
+#
+
+# ─── Custom Aliases ─────────────────────────────────────────────────────────
+# Add your personal aliases here
+# Example: alias myalias='some command'
+
+
+# ─── Custom Functions ───────────────────────────────────────────────────────
+# Add your personal functions here
+
+
+# ─── Git Aliases ────────────────────────────────────────────────────────────
+# Add machine-specific git aliases here
+
+
+# ─── Environment Variables ──────────────────────────────────────────────────
+# Add machine-specific environment variables here
+# Example: export MY_VAR="value"
+
+EOF
+    echo ""
+    echo "  ✓ Created $local_config"
+  fi
+
+  echo ""
+  echo "  Opening: $local_config"
+  echo "  (Machine-specific aliases)"
+  echo ""
+
+  # Open editor with fallback chain
+  ${EDITOR:-${VISUAL:-nano}} "$local_config"
+
+  # Reload shell config
+  echo ""
+  echo "  Reloading shell configuration..."
+  source ~/.zshrc
+  echo "  ✓ Done! Your new aliases are now available."
+  echo ""
+}
+
+# Add environment variable helper (aev = add environment variable)
+# Opens ~/.secrets for API keys and tokens
+function aev() {
+  local secrets_file="$HOME/.secrets"
+
+  # Create ~/.secrets with template if it doesn't exist
+  if [[ ! -f "$secrets_file" ]]; then
+    cat > "$secrets_file" << 'EOF'
+#
+# Environment Variables & Secrets
+# This file is sourced by ~/.zshrc and is NOT version controlled
+# SECURITY: chmod 600 - only you can read/write
+#
+
+# ─── API Keys ──────────────────────────────────────────────────────────────
+# export OPENAI_API_KEY="sk-..."
+# export ANTHROPIC_API_KEY="sk-ant-..."
+
+# ─── Tokens ────────────────────────────────────────────────────────────────
+# export GITHUB_TOKEN="ghp_..."
+# export NPM_TOKEN="npm_..."
+
+# ─── Other Secrets ─────────────────────────────────────────────────────────
+
+EOF
+    chmod 600 "$secrets_file"
+    echo ""
+    echo "  ✓ Created $secrets_file (chmod 600)"
+  fi
+
+  echo ""
+  echo "  Opening: $secrets_file"
+  echo "  (Environment variables & secrets)"
+  echo ""
+
+  ${EDITOR:-${VISUAL:-nano}} "$secrets_file"
+
+  echo ""
+  echo "  Reloading secrets..."
+  source "$secrets_file"
+  echo "  ✓ Done! Your new environment variables are now available."
+  echo ""
+}
+
 # Diff function using git's diff
 function diff() {
   git --no-pager diff --color=auto --no-ext-diff --no-index "$@"
@@ -129,6 +224,9 @@ function diff() {
 
 # Terminal settings
 stty icrnl  # Fixes <Return> key issues with some keyboards
+
+# ─── Secrets (API keys, tokens) ────────────────────────────────────────────
+[[ -f "$HOME/.secrets" ]] && source "$HOME/.secrets"
 
 # ─── Local Overrides ────────────────────────────────────────────────────────
 # Source local customizations (not tracked in git)
