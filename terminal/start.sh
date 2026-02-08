@@ -26,6 +26,27 @@ setopt COMBINING_CHARS      # Combine zero-length punctuation characters (accent
 setopt RC_QUOTES            # Allow 'Henry''s Garage' instead of 'Henry'\''s Garage'.
 unsetopt MAIL_WARNING       # Don't print a warning message if a mail file has been accessed.
 
+# ─── Line Editor (Keybindings) ─────────────────────────────────────────────
+# Use emacs keybindings regardless of $EDITOR (enables standard navigation)
+bindkey -e
+
+# Arrow keys: navigate within multi-line commands, then history
+bindkey "^[[A" up-line-or-history
+bindkey "^[[B" down-line-or-history
+bindkey "^[[C" forward-char
+bindkey "^[[D" backward-char
+# Application mode arrows (some terminals)
+bindkey "^[OA" up-line-or-history
+bindkey "^[OB" down-line-or-history
+bindkey "^[OC" forward-char
+bindkey "^[OD" backward-char
+
+# Home/End keys
+bindkey "^[[H" beginning-of-line
+bindkey "^[[F" end-of-line
+bindkey "^[[1~" beginning-of-line
+bindkey "^[[4~" end-of-line
+
 # ─── Jobs ───────────────────────────────────────────────────────────────────
 setopt LONG_LIST_JOBS       # List jobs in the long format by default.
 setopt AUTO_RESUME          # Attempt to resume existing job before creating a new process.
