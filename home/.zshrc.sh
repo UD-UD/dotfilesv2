@@ -57,13 +57,6 @@ fi
 # ─── Git Aliases ────────────────────────────────────────────────────────────
 source "$DOTFILES/terminal/git-alias.sh"
 
-# ─── Smart Navigation (zoxide) ──────────────────────────────────────────────
-if command -v zoxide &>/dev/null; then
-  eval "$(zoxide init zsh)" 2>/dev/null || true
-  alias cd='z'      # Replace cd with zoxide
-  alias cdi='zi'    # Interactive directory selection
-fi
-
 # ─── Fuzzy Finder (fzf) ─────────────────────────────────────────────────────
 if command -v fzf &>/dev/null; then
   # fzf 0.48+ uses this method
@@ -94,9 +87,17 @@ if command -v fnm &>/dev/null; then
   eval "$(fnm env --use-on-cd)" 2>/dev/null || true
 fi
 
-# ─── Starship Prompt (must be last before local) ────────────────────────────
+# ─── Starship Prompt ─────────────────────────────────────────────────────────
 if command -v starship &>/dev/null; then
   eval "$(starship init zsh)" 2>/dev/null || true
+fi
+
+# ─── Smart Navigation (zoxide — must be near end of .zshrc) ─────────────────
+# NOTE: Do NOT use --cmd cd here. It replaces the cd builtin with a zoxide
+# function, which breaks non-interactive shells and AI agents that use cd
+# without sourcing .zshrc (they get "__zoxide_z: command not found").
+if command -v zoxide &>/dev/null; then
+  eval "$(zoxide init zsh)"
 fi
 
 # ─── Environment Variables ──────────────────────────────────────────────────
