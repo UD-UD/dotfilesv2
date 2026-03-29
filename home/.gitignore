@@ -29,3 +29,8 @@ yarn.lock
 .yarn
 package-lock.json
 /.nyc_output/
+claude.md
+CLAUDE.md
+.claude
+/.claude
+.github/hooks/dash_hooks_github-copilot_*.json

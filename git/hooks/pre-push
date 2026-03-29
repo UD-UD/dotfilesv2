@@ -1,0 +1,32 @@
+#!/bin/bash
+#
+# Pre-push hook: Remind to check for secrets/keys before pushing
+#
+# Installed globally via core.hooksPath in .gitconfig
+# To bypass once: git push --no-verify
+#
+
+# Skip if not interactive (CI, scripts, etc.)
+if [[ ! -t 0 ]]; then
+  exit 0
+fi
+
+# Colors
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+echo ""
+echo -e "${YELLOW}!! Pre-push reminder !!${NC}"
+echo ""
+echo "  Have you checked that no secrets, API keys, or"
+echo "  personal information are included in this push?"
+echo ""
+
+read -p "  Continue with push? [y/N] " response
+if [[ "$response" =~ ^[Yy]$ ]]; then
+  exit 0
+else
+  echo ""
+  echo "  Push aborted."
+  exit 1
+fi

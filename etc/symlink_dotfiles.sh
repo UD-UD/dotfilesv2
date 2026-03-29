@@ -86,6 +86,12 @@ if [[ -d "$dotfiles/home/.config" ]]; then
 fi
 
 echo ""
+echo "=== Linking git hooks ==="
+
+# Link git hooks directory for core.hooksPath
+link "$dotfiles/git/hooks" "$HOME/.git-hooks"
+
+echo ""
 echo "=== Symlinks created successfully ==="
 echo ""
 echo "Restart your terminal or run: exec zsh"
