@@ -30,9 +30,9 @@ truncate_to_repo = true
 style = "bold cyan"
 read_only = " "
 
-# Git user - shows [username] at start of prompt in git directories
+# Git user - shows [handle (local)] or [handle (global)] in git directories
 [custom.gituser]
-command = "git config github.user 2>/dev/null || git config user.name 2>/dev/null"
+command = "local_user=$(git config --local github.user 2>/dev/null); if [ -n \"$local_user\" ]; then echo \"$local_user\"; else global_user=$(git config --global github.user 2>/dev/null); if [ -n \"$global_user\" ]; then echo \"$global_user\"; fi; fi"
 when = "git rev-parse --is-inside-work-tree 2>/dev/null"
 format = '[\[$output\]]($style) '
 style = "bold blue"
