@@ -4,14 +4,19 @@
 # Don't add blank line before prompt
 add_newline = false
 
+# Allow custom commands enough time for git lookups
+command_timeout = 1000
+
 # Prompt format - show only what matters
 format = """
 $nodejs\
 $python\
 $rust\
 ${custom.gituser}\
+${custom.dir_link_open}\
 $directory\
-$git_branch\
+${custom.dir_link_close}\
+${custom.gh_branch}\
 $git_status\
 $cmd_duration\
 $character"""
@@ -38,9 +43,26 @@ format = '[\[$output\]]($style) '
 style = "bold blue"
 
 [git_branch]
-format = "[$symbol$branch]($style) "
-symbol = ""
-style = "bold purple"
+disabled = true
+
+# Directory hyperlink - wraps $directory in an OSC 8 link to the GitHub repo URL
+# Only outputs the opening tag; dir_link_close handles the closing tag
+[custom.dir_link_open]
+command = "$DOTFILES/terminal/prompt-hyperlinks.sh dir-open"
+when = "git rev-parse --is-inside-work-tree 2>/dev/null"
+format = "$output"
+
+# Closes the OSC 8 hyperlink opened by dir_link_open
+[custom.dir_link_close]
+command = "printf '\\033]8;;\\033\\\\'"
+when = "git rev-parse --is-inside-work-tree 2>/dev/null"
+format = "$output"
+
+# Branch with clickable GitHub hyperlink (CMD+Click opens /tree/<branch>)
+[custom.gh_branch]
+command = "$DOTFILES/terminal/prompt-hyperlinks.sh branch"
+when = "git rev-parse --is-inside-work-tree 2>/dev/null"
+format = "$output"
 
 [git_status]
 format = '($all_status$ahead_behind )'
