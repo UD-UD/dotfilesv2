@@ -1,0 +1,56 @@
+{
+    "github.copilot.nextEditSuggestions.enabled": false,
+    "editor.fontSize": 14,
+    "editor.formatOnSave": true,
+    "chat.mcp.gallery.enabled": true,
+    "explorer.confirmDragAndDrop": false,
+    "chat.tools.terminal.autoApprove": {
+        "mkdir -p packages/{core,shared,design-system,web,desktop} packages/core/{src,tests,wasm} packages/shared/src/{types,utils,constants} packages/design-system/src/{tokens,components,themes} tests/e2e": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    },
+    "explorer.confirmDelete": false,
+    "claudeCode.preferredLocation": "panel",
+    "svelte.enable-ts-plugin": true,
+    "security.workspace.trust.untrustedFiles": "open",
+    "python.terminal.activateEnvironment": false,
+    "terminal.explorerKind": "both",
+    "terminal.external.osxExec": "iTerm.app",
+    "workbench.browser.enableChatTools": true,
+    "workbench.editorAssociations": {
+        "*.md": "vscode.markdown.preview.editor"
+    },
+    "workbench.editor.enablePreviewFromQuickOpen": true,
+    "workbench.editor.enablePreviewFromCodeNavigation": true,
+    "workbench.browser.openLocalhostLinks": true,
+    "security.promptForLocalFileProtocolHandling": false,
+    "github.copilot.nextEditSuggestions.eagerness": "low",
+    "github.copilot.enable": {
+        "*": false,
+        "plaintext": false,
+        "markdown": false,
+        "scminput": false
+    },
+    "workbench.startupEditor": "none",
+
+    // --- Minimalist layout: editor + explorer as the primary views ---
+    // Activity bar moves to a thin top strip: still there to open Search /
+    // Source Control / Run on demand, but no fat left column.
+    "workbench.activityBar.location": "top",
+    // Explorer / primary sidebar on the right instead of the left.
+    "workbench.sideBar.location": "right",
+    // Strip editor chrome down to the text.
+    "editor.minimap.enabled": false,
+    "breadcrumbs.enabled": false,
+    "editor.stickyScroll.enabled": false,
+    "editor.overviewRulerBorder": false,
+    // Remove the top-bar clutter (command center + window layout buttons).
+    "window.commandCenter": false,
+    "workbench.layoutControl.enabled": false,
+    // Panel (terminal/problems) and the right sidebar stay closed until summoned.
+    "workbench.panel.opensMaximized": "never",
+    "workbench.secondarySideBar.showLabels": false,
+    "editor.fontFamily": "SF Mono",
+    "workbench.iconTheme": "vscode-icons"
+}

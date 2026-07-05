@@ -99,6 +99,14 @@ echo "=== Linking Claude Code files ==="
 link "$dotfiles/claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
 
 echo ""
+echo "=== Linking VS Code settings ==="
+
+# Link the user/global VS Code settings (macOS path under Library, NOT ~/.config).
+# This is distinct from the repo's own workspace-level .vscode/ folder. VS Code
+# writes through the symlink, so settings changed via the UI flow back into the repo.
+link "$dotfiles/vscode/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
+
+echo ""
 echo "=== Symlinks created successfully ==="
 echo ""
 echo "Restart your terminal or run: exec zsh"
