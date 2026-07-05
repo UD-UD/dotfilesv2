@@ -42,16 +42,21 @@ dotfilesv2/
 ## Key Files
 
 ### home/.zshrc.sh
-Main entry point. Load order matters:
-1. Homebrew (must be first for PATH)
-2. `terminal/start.sh` (options, history)
-3. `terminal/completion.sh` (compinit)
-4. Syntax highlighting (before autosuggestions)
-5. Autosuggestions
-6. Git aliases
-7. zoxide, fzf
-8. Starship prompt (must be last)
-9. Local overrides (~/.zshrc.local)
+Main entry point. **Load order is critical** for proper initialization:
+
+1. **~/.zshrc.local** (loaded FIRST) - Your custom overrides, Homebrew paths
+2. **~/.secrets** (loaded EARLY) - API keys, tokens (chmod 600)
+3. **Homebrew detection** - Only if not already available
+4. **Dotfiles path detection**
+5. `terminal/start.sh` (options, history, aliases)
+6. `terminal/completion.sh` (compinit)
+7. Syntax highlighting (before autosuggestions)
+8. Autosuggestions
+9. Git aliases
+10. fzf, fnm, zoxide
+11. Starship prompt (must be last)
+
+**Important:** Local overrides load FIRST to ensure custom configurations (like Homebrew paths) take precedence over dotfiles defaults.
 
 ### terminal/start.sh
 Core shell configuration:
@@ -80,6 +85,152 @@ Interactive package installer:
 - Shows package status (installed/outdated/missing)
 - Asks for confirmation before each action
 - Packages: starship, zoxide, fzf, eza, bat, ripgrep, fd, git-delta, gh, fnm, neovim
+
+## Migration & Custom Configuration Preservation
+
+### First-Time Installation
+
+When installing these dotfiles on a machine with existing configurations, the bootstrap process automatically preserves your custom settings:
+
+**1. Migration Script Runs First**
+```bash
+./etc/migrate_custom_configs.sh
+```
+- Extracts custom aliases, functions, exports, and PATH additions
+- Identifies API keys and secrets
+- Detects installed system tools (Homebrew, nvm, pyenv, etc.)
+- Creates `~/dotfiles_migration_YYYYMMDD_HHMMSS.sh` for review
+
+**2. You Review and Decide**
+- Open the migration file to see what was found
+- Copy wanted configs to `~/.zshrc.local` or `~/.secrets`
+- System-level tools (Homebrew) are auto-detected - no action needed
+
+**3. Bootstrap Continues**
+- Backs up existing dotfiles to `~/dotfiles_backup_YYYYMMDD_HHMMSS/`
+- Symlinks new dotfiles
+- Your custom configs in `~/.zshrc.local` take precedence
+
+### Custom Homebrew Installations
+
+**Automatic Detection**: The dotfiles auto-detect custom Homebrew locations.
+
+If you have Homebrew in a non-standard location (e.g., `~/.homebrew`, `/custom/brew`):
+
+**IMPORTANT:** Custom Homebrew MUST be in `~/.zshenv.local` (NOT `.zshrc.local`)
+
+1. Create `~/.zshenv.local` BEFORE installing dotfiles:
+   ```bash
+   # Custom Homebrew location
+   if [[ -f "$HOME/.homebrew/bin/brew" ]]; then
+     eval "$($HOME/.homebrew/bin/brew shellenv)"
+   fi
+   ```
+
+2. Or let the migration script extract it for you
+
+**Why `.zshenv.local`?**
+- `.zshenv` loads in ALL shells (interactive and non-interactive)
+- `.zshrc` only loads in interactive shells
+- Homebrew paths needed everywhere
+- `.zshenv.local` loads FIRST before dotfiles
+
+**How it works:**
+- `.zshenv.local` loads FIRST in all shells
+- Sets your custom Homebrew path and `$HOMEBREW_PREFIX`
+- Then `.zshenv` checks if `brew` exists
+- Sees it's already available → skips initialization
+- Your custom installation preserved ✓
+
+**Supported scenarios:**
+- ✓ Standard Apple Silicon: `/opt/homebrew`
+- ✓ Standard Intel: `/usr/local`
+- ✓ Custom location: `~/homebrew`, `~/.homebrew`, `/anywhere/brew`
+- ✓ Multiple Homebrew installations (via `~/.zshrc.local`)
+
+### Local Overrides Pattern
+
+The dotfiles support three local override files (none are version controlled):
+
+**~/.zshenv.local** (system-level, loaded FIRST in ALL shells)
+```bash
+# Custom Homebrew location (MUST be here, not in .zshrc.local)
+if [[ -f "$HOME/.homebrew/bin/brew" ]]; then
+  eval "$($HOME/.homebrew/bin/brew shellenv)"
+fi
+
+# Other system-level environment variables needed in all shells
+export JAVA_HOME="/custom/java"
+export PATH="/custom/bin:$PATH"
+```
+
+**When to use:** System paths, package managers, essential env vars needed by **all** shells (interactive and non-interactive)
+
+**~/.zshrc.local** (interactive shells only)
+```bash
+# Custom aliases (override dotfiles defaults)
+alias gs='git status -sb'  # Overrides dotfiles gs alias
+
+# Custom functions
+myfunction() {
+  echo "Custom function"
+}
+
+# Interactive shell variables
+export MY_CUSTOM_VAR="value"
+
+# Node version manager (if using nvm instead of fnm)
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
+```
+
+**When to use:** Aliases, functions, interactive shell configs
+
+**~/.secrets** (API keys, chmod 600, loaded early)
+```bash
+# API Keys
+export OPENAI_API_KEY="sk-..."
+export ANTHROPIC_API_KEY="sk-ant-..."
+export GITHUB_TOKEN="ghp_..."
+
+# Keep this file secure
+# chmod 600 ~/.secrets
+```
+
+**When to use:** Sensitive credentials, API keys, tokens
+
+**Helpers:**
+- Run `aa` to edit `~/.zshrc.local` (creates template if missing)
+- Run `aev` to edit `~/.secrets` (creates template with chmod 600)
+- Manually create `~/.zshenv.local` for system-level configs
+
+**Loading Order:**
+```
+1. ~/.zshenv.local    (your system paths - ALL shells)
+2. ~/.zshenv          (dotfiles system config)
+3. ~/.zshrc.local     (your aliases/functions - interactive only)
+4. ~/.secrets         (your API keys - interactive only)
+5. ~/.zshrc           (dotfiles interactive config)
+```
+
+### Migration Philosophy
+
+**These dotfiles are opinionated** - they include specific tools and configurations:
+- Starship prompt
+- fnm for Node.js (not nvm)
+- eza, bat, ripgrep, fd
+- Specific git aliases and workflows
+
+**When you install:**
+1. **System-level things** (Homebrew paths, package managers) - **auto-preserved**
+2. **Your custom configs** (aliases, functions, exports) - **extracted for review**
+3. **You decide** what to migrate to `~/.zshrc.local`
+
+**Why not auto-merge everything?**
+- Prevents conflicts (different aliases with same names)
+- Lets you adopt the opinionated defaults
+- Cleaner setup - only keep what you need
+- You're in control of what carries forward
 
 ## Conventions
 
@@ -222,6 +373,25 @@ Set `DOTFILES` in `~/.zshrc.local` to override.
 ### Suppress "Last login" message
 The `.hushlogin` file in `home/` suppresses macOS's "Last login" message.
 
+### Terminal: Ghostty
+The primary terminal is **Ghostty**, configured at `home/.config/ghostty/config`.
+It deploys automatically — `etc/symlink_dotfiles.sh` symlinks every entry in
+`home/.config/` into `~/.config/`, so the whole `ghostty/` directory is linked
+without any installer changes. Key points:
+- **Font**: `SF Mono` primary + `Symbols Nerd Font Mono` fallback (repeated
+  `font-family` lines). SF Mono has no icon glyphs; the fallback supplies the
+  Nerd Font icons used by eza/starship/git. Install the font via
+  `brew install font-symbols-only-nerd-font` (offered by `install/install.sh`).
+- **Theme**: `Catppuccin Mocha` (built-in; exact name from `ghostty +list-themes`).
+- **`macos-option-as-alt = true`**: required so the Option key sends Alt —
+  otherwise fzf's `Alt+C` and the emacs Alt-word bindings in `terminal/start.sh`
+  break (Option would insert composed characters like é/ç).
+- **Shell integration is automatic**: Ghostty auto-injects zsh integration
+  (OSC 7 cwd tracking, OSC 133 prompt marks, cursor shape). No `.zshrc` edits are
+  needed, so we add none — manual sourcing would risk double-loading. The
+  `Apple_Terminal`-gated OSC 7 hook in `terminal/start.sh` does not conflict.
+- Validate after edits: `ghostty +validate-config`.
+
 ### Starship prompt settings
 Key settings in `home/.config/starship.toml`:
 - `add_newline = false` - No blank line before prompt
@@ -233,3 +403,98 @@ Key settings in `home/.config/starship.toml`:
 - **Prompt colors**: Configured in `home/.config/starship.toml`
 - **Git diff colors**: Configured in `home/.gitconfig` `[color "diff"]`
 - **Syntax highlighting**: Provided by `zsh-syntax-highlighting` submodule
+
+## Troubleshooting
+
+### "brew: command not found" after installation
+
+**Cause**: Homebrew shellenv not loaded in current session
+
+**Fix**:
+```bash
+# Restart terminal, or:
+exec zsh
+
+# Or manually load if custom location:
+eval "$(/your/custom/brew/path/bin/brew shellenv)"
+```
+
+### Custom Homebrew not being detected
+
+**Symptoms**: `which brew` shows custom location, but `$HOMEBREW_PREFIX` still points to `/opt/homebrew` or `/usr/local`
+
+**Root Cause**: Custom Homebrew in wrong file (`.zshrc.local` instead of `.zshenv.local`)
+
+**Fix**: Create `~/.zshenv.local` (NOT `.zshrc.local`):
+```bash
+cat > ~/.zshenv.local << 'EOF'
+# Custom Homebrew location - loaded FIRST in all shells
+if [[ -f "$HOME/.homebrew/bin/brew" ]]; then
+  eval "$($HOME/.homebrew/bin/brew shellenv)"
+fi
+EOF
+```
+
+Then reload:
+```bash
+exec zsh
+```
+
+**Verify BOTH match**:
+```bash
+which brew            # Should show: /Users/you/.homebrew/bin/brew
+echo $HOMEBREW_PREFIX # Should show: /Users/you/.homebrew
+```
+
+**Why `.zshenv.local`?**
+- `.zshenv` loads in ALL shells (before `.zshrc`)
+- `.zshrc` only loads in interactive shells
+- Custom Homebrew must load FIRST to set `$HOMEBREW_PREFIX` correctly
+
+### Want to use nvm instead of fnm
+
+The dotfiles use `fnm` by default, but you can use `nvm`:
+
+**Option 1**: Add to `~/.zshrc.local`:
+```bash
+# Use nvm instead of fnm
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && source "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && source "$NVM_DIR/bash_completion"
+```
+
+**Option 2**: Uninstall fnm:
+```bash
+brew uninstall fnm
+# Then add nvm config to ~/.zshrc.local as above
+```
+
+### Migration file not created
+
+**Run manually**:
+```bash
+~/dotfiles/dotfilesv2/etc/migrate_custom_configs.sh
+```
+
+**Review output**:
+```bash
+cat ~/dotfiles_migration_*.sh
+```
+
+### Want to undo dotfiles installation
+
+**Revert to backup**:
+```bash
+~/dotfiles/dotfilesv2/etc/revert.sh ~/dotfiles_backup_YYYYMMDD_HHMMSS
+```
+
+**Manual cleanup**:
+```bash
+# Remove symlinks
+rm ~/.zshrc ~/.zshenv ~/.zlogin ~/.gitconfig
+rm -r ~/.config/starship.toml
+
+# Restore from backup
+cp ~/dotfiles_backup_YYYYMMDD_HHMMSS/.zshrc ~/.zshrc
+# ... restore other files
+```

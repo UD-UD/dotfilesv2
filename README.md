@@ -325,9 +325,23 @@ zsh -f
 ./etc/revert.sh ~/dotfiles_backup_*
 ```
 
+### Terminal: Ghostty
+
+The recommended terminal is **[Ghostty](https://ghostty.org)**. A ready-made config
+ships at `home/.config/ghostty/config` and is symlinked to `~/.config/ghostty/config`
+automatically during setup (no extra steps). It sets SF Mono with a Nerd Font icon
+fallback, the Catppuccin Mocha theme, and `macos-option-as-alt` so fzf's `Alt+C` and
+the emacs Alt-key bindings work. Shell integration (directory tracking, prompt marks)
+is auto-injected by Ghostty — nothing to configure. Run `ghostty +validate-config`
+after editing the config.
+
+If icons render as empty boxes, install the fallback font:
+`brew install font-symbols-only-nerd-font` (also offered by `./install/install.sh`).
+
 ### Colors not showing
 
-Make sure your terminal supports 256 colors. For iTerm2, enable "Report Terminal Type" as `xterm-256color`.
+Make sure your terminal supports 256 colors (Ghostty and most modern terminals do by
+default). For iTerm2, enable "Report Terminal Type" as `xterm-256color`.
 
 ### Slow startup
 

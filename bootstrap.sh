@@ -109,6 +109,28 @@ else
   fi
 fi
 
+# ─── Extract Custom Configurations ─────────────────────────────────────────
+print_header "Extract Custom Configurations"
+
+echo "  Before installing the opinionated dotfiles, let's extract your"
+echo "  current custom configurations (aliases, exports, functions) for review."
+echo ""
+echo "  System-level tools (Homebrew, etc.) will be auto-detected - no action needed."
+echo ""
+
+if confirm "Extract custom configurations for review?"; then
+  if [[ -f "$DOTFILES_DIR/etc/migrate_custom_configs.sh" ]]; then
+    "$DOTFILES_DIR/etc/migrate_custom_configs.sh"
+  else
+    print_warning "Migration script not found, skipping extraction"
+  fi
+else
+  print_warning "Skipped custom configuration extraction"
+  echo ""
+  echo "  Note: You can run it manually later with:"
+  echo -e "    ${YELLOW}$DOTFILES_DIR/etc/migrate_custom_configs.sh${NC}"
+fi
+
 # ─── Backup ─────────────────────────────────────────────────────────────────
 print_header "Backup Existing Dotfiles"
 

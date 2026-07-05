@@ -1,0 +1,48 @@
+# Ghostty configuration
+#
+# Deployed by etc/symlink_dotfiles.sh, which symlinks every entry in
+# home/.config/ into ~/.config/. So this file lands at ~/.config/ghostty/config.
+#
+# Reference: `ghostty +show-config --default --docs` lists every option.
+# Validate after edits: `ghostty +validate-config`
+
+# ─── Font ───────────────────────────────────────────────────────────────────
+# SF Mono is Apple's monospace font (clean, native macOS feel).
+font-family = SF Mono
+# SF Mono has no icon glyphs. Ghostty uses repeated font-family entries as
+# fallback, so eza/starship/git Nerd Font icons resolve from this symbols-only
+# font. Install via: brew install font-symbols-only-nerd-font
+font-family = Symbols Nerd Font Mono
+font-size = 14
+
+# ─── Theme ──────────────────────────────────────────────────────────────────
+# Custom themes matched to VS Code's "Light 2026" / "Dark 2026" (see the files
+# under themes/). The light:…,dark:… form makes Ghostty follow the macOS
+# appearance, the same way VS Code auto-switches between the 2026 pair.
+theme = vscode-dark-2026
+
+# ─── Look ───────────────────────────────────────────────────────────────────
+background-opacity = 0.95
+background-blur-radius = 20
+window-padding-x = 10
+window-padding-y = 10
+# Reopen previous windows/tabs/splits on launch
+window-save-state = always
+
+# ─── macOS / keybinding correctness ─────────────────────────────────────────
+# Critical for this dotfiles setup: make the Option key send Alt instead of
+# inserting composed characters (é, ç, ...). Without this, fzf's Alt+C
+# directory jump and the emacs Alt-word bindings in terminal/start.sh break.
+macos-option-as-alt = true
+
+# ─── Shell integration ──────────────────────────────────────────────────────
+# Ghostty auto-injects zsh integration (OSC 7 cwd tracking, OSC 133 prompt
+# marks, cursor shape). These lines just make the choice explicit and opt into
+# the extra features.
+shell-integration = zsh
+shell-integration-features = cursor,sudo,title
+
+# ─── Quality of life ────────────────────────────────────────────────────────
+mouse-hide-while-typing = true
+copy-on-select = clipboard
+confirm-close-surface = false
