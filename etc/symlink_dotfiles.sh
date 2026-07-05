@@ -92,6 +92,13 @@ echo "=== Linking git hooks ==="
 link "$dotfiles/git/hooks" "$HOME/.git-hooks"
 
 echo ""
+echo "=== Linking Claude Code files ==="
+
+# Link individual Claude Code files (the ~/.claude dir itself stays untracked —
+# it holds machine-specific state; only portable files are symlinked in).
+link "$dotfiles/claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
+
+echo ""
 echo "=== Symlinks created successfully ==="
 echo ""
 echo "Restart your terminal or run: exec zsh"
