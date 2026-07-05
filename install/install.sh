@@ -89,6 +89,9 @@ echo "    • fnm        - Fast Node.js version manager"
 echo "    • python3    - Python"
 echo "    • gnupg      - GPG for signed commits"
 echo ""
+echo -e "  ${CYAN}Fonts:${NC}"
+echo "    • Symbols Nerd Font - Icon glyphs for SF Mono in Ghostty"
+echo ""
 echo -e "  ${CYAN}Optional:${NC}"
 echo "    • Rust       - Via rustup"
 echo ""
@@ -273,6 +276,25 @@ if [[ ${#to_upgrade[@]} -gt 0 ]]; then
       fi
     done
   fi
+fi
+
+# ─── Fonts ──────────────────────────────────────────────────────────────────
+print_header "Fonts"
+
+# SF Mono (set in home/.config/ghostty/config) lacks Nerd Font icon glyphs.
+# This symbols-only cask provides them as a Ghostty font fallback so eza,
+# starship, and git icons render instead of showing empty boxes.
+if brew list font-symbols-only-nerd-font &>/dev/null; then
+  print_success "Symbols Nerd Font already installed"
+elif confirm "Install Symbols Nerd Font (icon glyphs for SF Mono in Ghostty)?"; then
+  print_step "Installing font-symbols-only-nerd-font..."
+  if brew install font-symbols-only-nerd-font; then
+    print_success "Symbols Nerd Font installed"
+  else
+    print_warning "Font install failed (continuing...)"
+  fi
+else
+  print_warning "Skipping Symbols Nerd Font (icons may render as boxes)"
 fi
 
 # ─── fzf Key Bindings ───────────────────────────────────────────────────────
