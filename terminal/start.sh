@@ -132,6 +132,13 @@ function freload {
   done
 }
 
+# Start a local HTTP server in the current directory (default port 8191)
+function quick-serve {
+  local port="${1:-8191}"
+  python3 -m http.server "$port"
+}
+alias qs='quick-serve'
+
 # ─── Help / Quick Reference ─────────────────────────────────────────────────
 function h() {
   local CYAN='\033[0;36m'
@@ -228,6 +235,7 @@ ${CYAN}━━━ USEFUL COMMANDS ━━━━━━━━━━━━━━━�
   ${YELLOW}cat ${MAGENTA}<file>${NC}      View file with syntax highlighting (bat)
   ${YELLOW}grep ${MAGENTA}<pat>${NC}      Search with colors (or use 'rg' for ripgrep)
   ${YELLOW}fd ${MAGENTA}<pattern>${NC}    Fast find files
+  ${YELLOW}qs ${MAGENTA}[port]${NC}       Quick HTTP server in current dir (default 8191)
   ${YELLOW}c${NC}               Clear screen
   ${YELLOW}h${NC}               Show this help
 
