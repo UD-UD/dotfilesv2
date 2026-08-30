@@ -10,14 +10,28 @@
 setopt NO_RM_STAR_SILENT      # Ask for confirmation on rm *
 setopt INTERACTIVE_COMMENTS   # Allow comments in interactive shells
 
+# ─── Early Local Overrides ─────────────────────────────────────────────────
+# Load local config FIRST to allow custom Homebrew paths and other settings
+# This ensures your custom configurations take precedence
+[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
+
+# ─── Early Secrets Loading ─────────────────────────────────────────────────
+# Load secrets early for tools that need them during initialization
+[[ -f "$HOME/.secrets" ]] && source "$HOME/.secrets"
+
 # ─── Homebrew ───────────────────────────────────────────────────────────────
-# Detect and initialize Homebrew (Apple Silicon or Intel)
-if [[ -f "/opt/homebrew/bin/brew" ]]; then
-  eval "$(/opt/homebrew/bin/brew shellenv)" 2>/dev/null || true
-elif [[ -f "/usr/local/bin/brew" ]]; then
-  eval "$(/usr/local/bin/brew shellenv)" 2>/dev/null || true
-elif [[ -f "$HOME/homebrew/bin/brew" ]]; then
-  eval "$($HOME/homebrew/bin/brew shellenv)" 2>/dev/null || true
+# Detect and initialize Homebrew (Apple Silicon, Intel, or custom location)
+# IMPORTANT: Only initialize if brew is not already available
+# This preserves custom Homebrew installations set in ~/.zshrc.local
+if ! command -v brew &>/dev/null && [[ -z "$HOMEBREW_PREFIX" ]]; then
+  # Try common Homebrew locations only if brew not found
+  if [[ -f "/opt/homebrew/bin/brew" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)" 2>/dev/null || true
+  elif [[ -f "/usr/local/bin/brew" ]]; then
+    eval "$(/usr/local/bin/brew shellenv)" 2>/dev/null || true
+  elif [[ -f "$HOME/homebrew/bin/brew" ]]; then
+    eval "$($HOME/homebrew/bin/brew shellenv)" 2>/dev/null || true
+  fi
 fi
 
 # ─── Dotfiles Path ──────────────────────────────────────────────────────────
@@ -57,6 +71,9 @@ fi
 # ─── Git Aliases ────────────────────────────────────────────────────────────
 source "$DOTFILES/terminal/git-alias.sh"
 
+# ─── Ghostty (themes + font toggle) ─────────────────────────────────────────
+source "$DOTFILES/terminal/ghostty.sh"
+
 # ─── Fuzzy Finder (fzf) ─────────────────────────────────────────────────────
 if command -v fzf &>/dev/null; then
   # fzf 0.48+ uses this method
@@ -82,8 +99,14 @@ if command -v fzf &>/dev/null; then
   export FZF_ALT_C_OPTS='--preview "eza --tree --color=always {} 2>/dev/null || ls -la {}"'
 fi
 
-# ─── Node.js (fnm) ──────────────────────────────────────────────────────────
-if command -v fnm &>/dev/null; then
+# ─── Node.js (nvm takes precedence, else fnm) ───────────────────────────────
+# If ~/.zshrc.local set up nvm (it loads at the top of this file), that is the
+# active version manager and fnm must stay out of the way - running both leaves
+# two shims fighting over PATH. fnm's --use-on-cd hook also calls `fnm use` in
+# any directory holding package.json/.nvmrc/.node-version, and fnm panics there
+# if the shell's cwd has been deleted (upstream unwraps current_dir()), so an
+# unused fnm is not merely redundant, it is a crash source.
+if [[ -z "$NVM_DIR" ]] && command -v fnm &>/dev/null; then
   eval "$(fnm env --use-on-cd)" 2>/dev/null || true
 fi
 
@@ -225,13 +248,6 @@ function diff() {
 
 # Terminal settings
 stty icrnl  # Fixes <Return> key issues with some keyboards
-
-# ─── Secrets (API keys, tokens) ────────────────────────────────────────────
-[[ -f "$HOME/.secrets" ]] && source "$HOME/.secrets"
-
-# ─── Local Overrides ────────────────────────────────────────────────────────
-# Source local customizations (not tracked in git)
-[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
 
 # ─── Profiling (uncomment to debug slow startup) ────────────────────────────
 # zprof

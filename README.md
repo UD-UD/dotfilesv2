@@ -143,6 +143,7 @@ Type `h` in your terminal to see all available shortcuts:
 h          # Show full quick reference
 h git      # Show all git aliases
 h fzf      # Show fzf shortcuts
+h theme    # Show your Ghostty themes
 ```
 
 ### Keyboard Shortcuts
@@ -215,6 +216,31 @@ cmd G      # Pipe to grep
 cmd L      # Pipe to less
 cmd CNT    # Count lines (wc -l)
 ```
+
+### Terminal Appearance (Ghostty)
+
+Two commands change how Ghostty looks without editing the config by hand.
+
+```bash
+gtheme                    # list your themes
+gtheme opencode-dark      # apply to this session, instantly
+gtheme -a opencode-dark   # apply to every open session
+gtheme -r                 # back to the configured theme
+
+gfont                     # toggle the low-DPI font (CommitMono), then press ⌘⇧,
+gfont on | gfont off      # force it on or off
+```
+
+They work differently on purpose, because Ghostty treats colors and fonts
+differently. Colors are per-surface terminal state that a program can set with
+escape sequences, so `gtheme` retimes a live session with no reload — it reads a
+theme file and replays it as OSC sequences. Fonts belong to the renderer and have
+no escape sequence at all, so `gfont` writes an override file that the config
+includes and the change lands on reload, which Ghostty applies to *every* window.
+There is no per-session font switch to be had.
+
+`gtheme` works with your own themes and all ~465 that ship with Ghostty
+(`ghostty +list-themes`), including names with spaces: `gtheme "Catppuccin Mocha"`.
 
 ## Directory Structure
 
@@ -330,13 +356,25 @@ zsh -f
 The recommended terminal is **[Ghostty](https://ghostty.org)**. A ready-made config
 ships at `home/.config/ghostty/config` and is symlinked to `~/.config/ghostty/config`
 automatically during setup (no extra steps). It sets SF Mono with a Nerd Font icon
-fallback, the Catppuccin Mocha theme, and `macos-option-as-alt` so fzf's `Alt+C` and
-the emacs Alt-key bindings work. Shell integration (directory tracking, prompt marks)
-is auto-injected by Ghostty — nothing to configure. Run `ghostty +validate-config`
-after editing the config.
+fallback, the `vscode-dark-2026` theme, and `macos-option-as-alt` so fzf's `Alt+C`
+and the emacs Alt-key bindings work. Shell integration (directory tracking, prompt
+marks) is auto-injected by Ghostty — nothing to configure. Run
+`ghostty +validate-config` after editing the config.
+
+Themes live in `home/.config/ghostty/themes/` and are selectable by filename;
+`gtheme` switches a running session without a reload. See
+[Terminal Appearance](#terminal-appearance-ghostty).
+
+**Non-Retina displays:** SF Mono assumes Retina and ships almost no low-DPI
+hinting, so below roughly 120 PPI its stems fall between pixels and render
+unevenly — macOS removed subpixel antialiasing in Mojave, so nothing snaps them
+back to the grid. Run `gfont` to swap in CommitMono, which is hinted for low DPI,
+plus `font-thicken`. It writes `font-override.conf` next to the config (gitignored)
+and takes effect on `⌘⇧,`.
 
 If icons render as empty boxes, install the fallback font:
-`brew install font-symbols-only-nerd-font` (also offered by `./install/install.sh`).
+`brew install --cask font-symbols-only-nerd-font` (also offered by
+`./install/install.sh`, alongside `font-commit-mono`).
 
 ### Colors not showing
 
