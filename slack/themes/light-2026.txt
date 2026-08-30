@@ -1,0 +1,25 @@
+Slack "Light 2026" — matched to VS Code's "2026 Light" palette.
+
+Slack themes are NOT file-based and can't be symlinked — they live in Slack's
+internal storage. To apply: Slack → Preferences → Themes → (scroll to bottom)
+"Create a custom theme" / paste, then paste the value string below.
+
+Slack accepts a comma-separated string of hex colors, in this order:
+  Column BG, Menu BG Hover, Active Item, Active Item Text,
+  Hover Item, Text Color, Active Presence, Mention Badge,
+  Top Nav BG, Top Nav Text
+
+Value (paste this):
+#FAFAFD,#0069CC1A,#0069CC,#FFFFFF,#F1F1F3,#202020,#116329,#AD0707,#FFFFFF,#202020
+
+Mapping to VS Code 2026-light:
+  Column BG        #FAFAFD  sideBar.background
+  Menu BG Hover    #0069CC1A list.hoverBackground (accent tint)
+  Active Item      #0069CC  button.background (accent)
+  Active Item Text #FFFFFF  button.foreground
+  Hover Item       #F1F1F3  list.hoverBackground
+  Text Color       #202020  editor.foreground
+  Active Presence  #116329  git added / green
+  Mention Badge    #AD0707  errorForeground / red
+  Top Nav BG       #FFFFFF  editor.background
+  Top Nav Text     #202020  editor.foreground

@@ -404,6 +404,26 @@ Key settings in `home/.config/starship.toml`:
 - **Git diff colors**: Configured in `home/.gitconfig` `[color "diff"]`
 - **Syntax highlighting**: Provided by `zsh-syntax-highlighting` submodule
 
+### 2026 themes across apps (VS Code parity)
+VS Code's built-in **"2026 Light"** and **"2026 Dark"** themes are ported to
+other apps so everything matches. All palettes derive from the same source:
+`.../Visual Studio Code.app/.../extensions/theme-defaults/themes/2026-{light,dark}.json`
+(editor/workbench colors + GitHub-derived `tokenColors` for syntax).
+
+- **Ghostty**: `home/.config/ghostty/themes/vscode-{light,dark}-2026` (terminal
+  palette + bg/fg). Deployed via the `.config` symlink loop.
+- **Obsidian**: `obsidian/themes/{Light,Dark} 2026/` — each a `manifest.json` +
+  `theme.css` mapping the VS Code colors onto Obsidian's CSS variables. Each is
+  single-flavor (forces its palette under both `.theme-light`/`.theme-dark`, so
+  the named theme always renders as expected regardless of Obsidian's toggle).
+  `etc/symlink_dotfiles.sh` reads vault paths from Obsidian's own
+  `~/Library/Application Support/obsidian/obsidian.json` and symlinks every
+  theme into each vault's `.obsidian/themes/`. Select in Settings → Appearance.
+- **Slack**: `slack/themes/{light,dark}-2026.txt` — Slack themes are NOT
+  file-based (they live in Slack's internal store, so they can't be symlinked).
+  These files hold the paste-ready comma-separated hex string + color mapping;
+  apply via Slack → Preferences → Themes.
+
 ## Troubleshooting
 
 ### "brew: command not found" after installation

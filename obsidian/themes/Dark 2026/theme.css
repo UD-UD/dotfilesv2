@@ -1,0 +1,83 @@
+/*
+ * Obsidian "Dark 2026" — matched to VS Code's "2026 Dark" editor colors.
+ *
+ * Palette mapped from VS Code's theme-defaults/themes/2026-dark.json
+ * (editor.* / workbench colors) + its GitHub-derived tokenColors for the
+ * code-block syntax variables. Same source the Ghostty `vscode-dark-2026`
+ * theme cites. Regenerate by re-reading that JSON.
+ *
+ * This is a dark-only theme: the palette is applied under BOTH .theme-dark
+ * and .theme-light so selecting "Dark 2026" always renders dark, regardless
+ * of Obsidian's light/dark toggle.
+ */
+
+.theme-dark,
+.theme-light {
+  /* Accent (VS Code button #297AA0 / link #48A0C7) as HSL components */
+  --accent-h: 198;
+  --accent-s: 53%;
+  --accent-l: 48%;
+
+  /* Backgrounds */
+  --background-primary: #121314;        /* editor.background */
+  --background-primary-alt: #191a1b;
+  --background-secondary: #191a1b;      /* sideBar.background */
+  --background-secondary-alt: #202122;  /* editorWidget.background */
+
+  --background-modifier-border: #2a2b2c;
+  --background-modifier-border-hover: #333536;
+  --background-modifier-border-focus: #3994bc;
+  --background-modifier-hover: #1e1f20;
+  --background-modifier-active-hover: #2c2d2e;
+  --background-modifier-flash: #3994bc33;
+
+  /* Text */
+  --text-normal: #bbbebf;               /* editor.foreground */
+  --text-muted: #8c8c8c;
+  --text-faint: #858889;
+  --text-on-accent: #ffffff;
+  --text-error: #f48771;
+  --text-accent: #48a0c7;               /* textLink.foreground */
+  --text-accent-hover: #53a5ca;
+  --text-selection: #27678266;          /* editor.selectionBackground */
+  --text-highlight-bg: #27678290;
+
+  /* Interactive / buttons */
+  --interactive-normal: #202122;
+  --interactive-hover: #2c2d2e;
+  --interactive-accent: #297aa0;        /* button.background */
+  --interactive-accent-hover: #2b7da3;
+
+  /* Chrome */
+  --titlebar-background: #191a1b;
+  --titlebar-background-focused: #191a1b;
+  --titlebar-text-color: #8c8c8c;
+  --divider-color: #2a2b2c;
+  --scrollbar-thumb-bg: #a8a9aa40;
+  --scrollbar-active-thumb-bg: #a8a9aa60;
+  --tab-background-active: #121314;
+
+  /* Semantic colors (from tokenColors / charts) */
+  --color-red: #f48771;
+  --color-orange: #ffa657;
+  --color-yellow: #e5ba7d;
+  --color-green: #7ee787;
+  --color-cyan: #29b8db;
+  --color-blue: #79c0ff;
+  --color-purple: #d2a8ff;
+  --color-pink: #d670d6;
+
+  /* Code-block syntax (VS Code 2026-dark tokenColors) */
+  --code-background: #191a1b;
+  --code-normal: #c9d1d9;
+  --code-comment: #8b949e;
+  --code-keyword: #ff7b72;
+  --code-operator: #ff7b72;
+  --code-function: #d2a8ff;
+  --code-property: #79c0ff;
+  --code-tag: #7ee787;
+  --code-string: #a5d6ff;
+  --code-value: #79c0ff;
+  --code-important: #ffa657;
+  --code-punctuation: #8b949e;
+}

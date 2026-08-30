@@ -32,3 +32,4 @@ package-lock.json
 .claude
 /.claude
 .github/hooks/dash_hooks_github-copilot_*.json
+.kiro/hooks/dash-*.kiro.hook

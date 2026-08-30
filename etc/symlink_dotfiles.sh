@@ -107,6 +107,29 @@ echo "=== Linking VS Code settings ==="
 link "$dotfiles/vscode/settings.json" "$HOME/Library/Application Support/Code/User/settings.json"
 
 echo ""
+echo "=== Linking Obsidian themes ==="
+
+# Obsidian themes live per-vault under <vault>/.obsidian/themes/. There's no
+# single global path, so we read the vault list straight from Obsidian's own
+# config (obsidian.json) and link each theme into every vault. Dependency-free
+# parse: vault "path" values are quoted and never contain embedded quotes.
+obsidian_config="$HOME/Library/Application Support/obsidian/obsidian.json"
+if [[ -f "$obsidian_config" ]] && [[ -d "$dotfiles/obsidian/themes" ]]; then
+  grep -o '"path":"[^"]*"' "$obsidian_config" \
+    | sed 's/^"path":"//; s/"$//' \
+    | while IFS= read -r vault; do
+        [[ -d "$vault" ]] || continue
+        for theme in "$dotfiles/obsidian/themes"/*/; do
+          [[ -d "$theme" ]] || continue
+          theme_name="$(basename "$theme")"
+          link "${theme%/}" "$vault/.obsidian/themes/$theme_name"
+        done
+      done
+else
+  echo "  Skipping: no obsidian.json or no repo themes found"
+fi
+
+echo ""
 echo "=== Symlinks created successfully ==="
 echo ""
 echo "Restart your terminal or run: exec zsh"
