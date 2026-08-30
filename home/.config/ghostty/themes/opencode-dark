@@ -1,0 +1,38 @@
+# opencode — ported from the opencode TUI theme.
+#
+# Source: anomalyco/opencode @ 10765ff, packages/tui/src/theme/assets/opencode.json
+#
+# That file defines *semantic* UI colors (primary, syntaxKeyword, error, ...)
+# over a 12-step neutral ramp, not the 16 ANSI slots a terminal needs. The six
+# named hues (Red/Green/Yellow/Secondary/Accent/Cyan) map onto ANSI 1-6, the
+# neutral ramp supplies black/white, and the missing half of each pair is
+# derived by a lightness nudge of -0.11 with saturation -0.02 -- the mean
+# normal->bright delta measured across VS Code's own dark palette.
+#
+# Regenerate by re-reading opencode.json and re-applying that mapping.
+
+# Dark variant. ANSI 9-14 are opencode's own hues; 1-6 are derived downward.
+
+palette = 0=#1e1e1e
+palette = 1=#d4404b
+palette = 2=#56c96b
+palette = 3=#daa94e
+palette = 4=#297cef
+palette = 5=#7d53c9
+palette = 6=#3e97a2
+palette = 7=#eeeeee
+palette = 8=#808080
+palette = 9=#e06c75
+palette = 10=#7fd88f
+palette = 11=#e5c07b
+palette = 12=#5c9cf5
+palette = 13=#9d7cd8
+palette = 14=#56b6c2
+palette = 15=#ffffff
+
+background = #0a0a0a
+foreground = #eeeeee
+cursor-color = #fab283
+cursor-text = #0a0a0a
+selection-background = #323232
+selection-foreground = #eeeeee
