@@ -239,6 +239,14 @@ ${CYAN}━━━ SHELL MANAGEMENT ━━━━━━━━━━━━━━━�
   ${YELLOW}zshreload${NC}       Reload shell config
   ${YELLOW}zc${NC}              Clear completion cache & reload
 
+${CYAN}━━━ TERMINAL THEME (Ghostty) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}
+
+  ${YELLOW}gtheme${NC}            List your themes
+  ${YELLOW}gtheme ${MAGENTA}<name>${NC}     Apply theme to this session
+  ${YELLOW}gtheme -a ${MAGENTA}<name>${NC}  Apply theme to every open session
+  ${YELLOW}gtheme -r${NC}         Reset to the theme in the config file
+  ${YELLOW}gfont${NC}             Toggle low-DPI font (CommitMono) - needs ⌘⇧, reload
+
 ${CYAN}━━━ PIPE SHORTCUTS (Global Aliases) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}
 
   ${YELLOW}cmd ${MAGENTA}H${NC}           Pipe to head (first 10 lines)
@@ -265,7 +273,7 @@ ${CYAN}━━━ COMPLETION TIPS ━━━━━━━━━━━━━━━�
 
 ${BLUE}──────────────────────────────────────────────────────────────────────────────${NC}
   Dotfiles: ${YELLOW}\$DOTFILES${NC} (${DOTFILES:-~/dotfilesv2})
-  Config:   ${YELLOW}h git${NC} for git aliases, ${YELLOW}h fzf${NC} for fzf shortcuts
+  Config:   ${YELLOW}h git${NC} aliases, ${YELLOW}h fzf${NC} shortcuts, ${YELLOW}h theme${NC} themes
 ${BLUE}──────────────────────────────────────────────────────────────────────────────${NC}
 
 EOF
@@ -276,6 +284,10 @@ EOF
     git)
       print "${CYAN}Full git aliases:${NC}"
       alias | grep "^g" | sort
+      ;;
+    theme)
+      print "${CYAN}Ghostty themes:${NC}"
+      gtheme
       ;;
     fzf)
       print "${CYAN}fzf environment:${NC}"

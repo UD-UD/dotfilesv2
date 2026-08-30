@@ -71,6 +71,9 @@ fi
 # ─── Git Aliases ────────────────────────────────────────────────────────────
 source "$DOTFILES/terminal/git-alias.sh"
 
+# ─── Ghostty (themes + font toggle) ─────────────────────────────────────────
+source "$DOTFILES/terminal/ghostty.sh"
+
 # ─── Fuzzy Finder (fzf) ─────────────────────────────────────────────────────
 if command -v fzf &>/dev/null; then
   # fzf 0.48+ uses this method
