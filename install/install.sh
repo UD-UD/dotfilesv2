@@ -54,12 +54,13 @@ confirm() {
   [[ "$response" =~ ^[Yy]$ ]]
 }
 
-# Detect architecture
+# Detect architecture and expected Homebrew location
+# Note: This is just for the installer - actual location may vary
 if [[ "$(uname -m)" == "arm64" ]]; then
-  HOMEBREW_PREFIX="/opt/homebrew"
+  EXPECTED_BREW_PREFIX="/opt/homebrew"
   ARCH="Apple Silicon"
 else
-  HOMEBREW_PREFIX="/usr/local"
+  EXPECTED_BREW_PREFIX="/usr/local"
   ARCH="Intel"
 fi
 
@@ -106,10 +107,21 @@ fi
 # ─── Homebrew ───────────────────────────────────────────────────────────────
 print_header "Homebrew"
 
+BREW_JUST_INSTALLED=false
+
 if command -v brew &>/dev/null; then
   print_success "Homebrew is already installed"
+  BREW_LOCATION=$(command -v brew)
   BREW_VERSION=$(brew --version | head -1)
+  BREW_PREFIX=$(brew --prefix)
   echo "  Version: $BREW_VERSION"
+  echo "  Location: $BREW_LOCATION"
+
+  # Check if it's a custom location
+  if [[ "$BREW_PREFIX" != "/opt/homebrew" ]] && [[ "$BREW_PREFIX" != "/usr/local" ]]; then
+    print_warning "Custom Homebrew location detected: $BREW_PREFIX"
+    echo "  This will be preserved by the dotfiles"
+  fi
 else
   print_warning "Homebrew is not installed"
   echo ""
@@ -119,29 +131,56 @@ else
   if confirm "Continue with Homebrew installation?"; then
     print_step "Installing Homebrew..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    eval "$($HOMEBREW_PREFIX/bin/brew shellenv)"
-    print_success "Homebrew installed"
+    BREW_JUST_INSTALLED=true
+
+    # Initialize brew for this session - try to find where it was installed
+    if [[ -f "$EXPECTED_BREW_PREFIX/bin/brew" ]]; then
+      eval "$($EXPECTED_BREW_PREFIX/bin/brew shellenv)" 2>/dev/null || true
+    elif command -v brew &>/dev/null; then
+      # If brew is now in PATH, use it
+      eval "$(brew shellenv)" 2>/dev/null || true
+    fi
+
+    if command -v brew &>/dev/null; then
+      print_success "Homebrew installed"
+    else
+      print_error "Homebrew installation may have failed - brew not found in PATH"
+      echo "  You may need to manually add it to your PATH"
+    fi
   else
     print_error "Homebrew is required. Exiting."
     exit 1
   fi
 fi
 
-# Add brew to PATH for this session
-eval "$($HOMEBREW_PREFIX/bin/brew shellenv)" 2>/dev/null || true
+# Ensure brew is available for the rest of this script
+# IMPORTANT: Only initialize if both brew command AND HOMEBREW_PREFIX are missing
+# This preserves custom Homebrew installations set in ~/.zshenv.local
+if ! command -v brew &>/dev/null && [[ -z "$HOMEBREW_PREFIX" ]]; then
+  # Try common locations
+  if [[ -f "$EXPECTED_BREW_PREFIX/bin/brew" ]]; then
+    eval "$($EXPECTED_BREW_PREFIX/bin/brew shellenv)" 2>/dev/null || true
+  elif [[ -f "/opt/homebrew/bin/brew" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)" 2>/dev/null || true
+  elif [[ -f "/usr/local/bin/brew" ]]; then
+    eval "$(/usr/local/bin/brew shellenv)" 2>/dev/null || true
+  fi
+fi
 
 if confirm "Update Homebrew and upgrade existing packages?"; then
   print_step "Updating Homebrew..."
-  brew update
+  brew update || true
   print_step "Upgrading packages..."
-  brew upgrade
-  print_success "Homebrew updated"
+  brew upgrade || print_warning "Some packages may have failed to upgrade"
+  print_success "Homebrew update complete"
 fi
 
 # ─── Package Installation ───────────────────────────────────────────────────
 print_header "Checking Packages"
 
 # Define packages (parallel arrays for bash 3.x compatibility)
+# Note: python3 excluded by default when using custom Homebrew (slow source build)
+# Install manually with: brew install python3
 packages=(
   "starship"
   "zoxide"
@@ -155,7 +194,6 @@ packages=(
   "gh"
   "neovim"
   "fnm"
-  "python3"
   "gnupg"
 )
 
@@ -172,7 +210,6 @@ descriptions=(
   "GitHub CLI - create PRs, issues, manage repos from terminal"
   "Modern vim with better defaults and plugin ecosystem"
   "Fast Node.js version manager - switch versions instantly"
-  "Python interpreter"
   "GPG encryption for signing git commits"
 )
 
