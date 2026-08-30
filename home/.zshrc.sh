@@ -99,8 +99,14 @@ if command -v fzf &>/dev/null; then
   export FZF_ALT_C_OPTS='--preview "eza --tree --color=always {} 2>/dev/null || ls -la {}"'
 fi
 
-# ─── Node.js (fnm) ──────────────────────────────────────────────────────────
-if command -v fnm &>/dev/null; then
+# ─── Node.js (nvm takes precedence, else fnm) ───────────────────────────────
+# If ~/.zshrc.local set up nvm (it loads at the top of this file), that is the
+# active version manager and fnm must stay out of the way - running both leaves
+# two shims fighting over PATH. fnm's --use-on-cd hook also calls `fnm use` in
+# any directory holding package.json/.nvmrc/.node-version, and fnm panics there
+# if the shell's cwd has been deleted (upstream unwraps current_dir()), so an
+# unused fnm is not merely redundant, it is a crash source.
+if [[ -z "$NVM_DIR" ]] && command -v fnm &>/dev/null; then
   eval "$(fnm env --use-on-cd)" 2>/dev/null || true
 fi
 

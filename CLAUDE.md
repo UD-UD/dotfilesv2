@@ -53,7 +53,7 @@ Main entry point. **Load order is critical** for proper initialization:
 7. Syntax highlighting (before autosuggestions)
 8. Autosuggestions
 9. Git aliases
-10. fzf, fnm, zoxide
+10. fzf, fnm (skipped if nvm is configured), zoxide
 11. Starship prompt (must be last)
 
 **Important:** Local overrides load FIRST to ensure custom configurations (like Homebrew paths) take precedence over dotfiles defaults.
@@ -217,7 +217,7 @@ export GITHUB_TOKEN="ghp_..."
 
 **These dotfiles are opinionated** - they include specific tools and configurations:
 - Starship prompt
-- fnm for Node.js (not nvm)
+- fnm for Node.js by default (nvm wins if configured locally)
 - eza, bat, ripgrep, fd
 - Specific git aliases and workflows
 
@@ -355,7 +355,7 @@ gidentity-add    # Add a new identity
 - **Shell**: Zsh (macOS default)
 - **Prompt**: Starship
 - **Package Manager**: Homebrew
-- **Node Version Manager**: fnm
+- **Node Version Manager**: nvm if `$NVM_DIR` is set by `~/.zshrc.local`, otherwise fnm
 - **Fuzzy Finder**: fzf
 - **Directory Jumper**: zoxide
 
@@ -453,7 +453,9 @@ echo $HOMEBREW_PREFIX # Should show: /Users/you/.homebrew
 
 ### Want to use nvm instead of fnm
 
-The dotfiles use `fnm` by default, but you can use `nvm`:
+The dotfiles use `fnm` by default, but `~/.zshrc.local` setting `NVM_DIR` is
+enough to switch — `.zshrc` skips fnm entirely when that variable is set, so the
+two never run together. No need to uninstall fnm:
 
 **Option 1**: Add to `~/.zshrc.local`:
 ```bash
