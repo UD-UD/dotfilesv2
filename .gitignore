@@ -10,3 +10,6 @@ home/.gitconfig
 # Editor
 *.swp
 *~
+
+# Ghostty low-DPI font override (machine-specific, toggled by `gfont`)
+home/.config/ghostty/font-override.conf

@@ -91,7 +91,8 @@ echo "    • python3    - Python"
 echo "    • gnupg      - GPG for signed commits"
 echo ""
 echo -e "  ${CYAN}Fonts:${NC}"
-echo "    • Symbols Nerd Font - Icon glyphs for SF Mono in Ghostty"
+echo "    • Symbols Nerd Font - Icon glyphs for Ghostty"
+echo "    • Commit Mono       - Low-DPI-hinted font for non-Retina displays"
 echo ""
 echo -e "  ${CYAN}Optional:${NC}"
 echo "    • Rust       - Via rustup"
@@ -321,9 +322,13 @@ print_header "Fonts"
 # SF Mono (set in home/.config/ghostty/config) lacks Nerd Font icon glyphs.
 # This symbols-only cask provides them as a Ghostty font fallback so eza,
 # starship, and git icons render instead of showing empty boxes.
+#
+# Ghostty accepts an unknown font-family without complaint and quietly falls
+# back, so a missing font looks like "the setting did nothing" rather than an
+# error. Both casks are installed here to keep the config honest.
 if brew list font-symbols-only-nerd-font &>/dev/null; then
   print_success "Symbols Nerd Font already installed"
-elif confirm "Install Symbols Nerd Font (icon glyphs for SF Mono in Ghostty)?"; then
+elif confirm "Install Symbols Nerd Font (icon glyphs for Ghostty)?"; then
   print_step "Installing font-symbols-only-nerd-font..."
   if brew install font-symbols-only-nerd-font; then
     print_success "Symbols Nerd Font installed"
@@ -332,6 +337,22 @@ elif confirm "Install Symbols Nerd Font (icon glyphs for SF Mono in Ghostty)?"; 
   fi
 else
   print_warning "Skipping Symbols Nerd Font (icons may render as boxes)"
+fi
+
+# CommitMono is the low-DPI font `gfont` swaps in. SF Mono assumes Retina and
+# renders unevenly below ~120 PPI, so this is only worth installing if a
+# non-Retina display is in use - but `gfont` is a no-op without it.
+if brew list --cask font-commit-mono &>/dev/null; then
+  print_success "Commit Mono already installed"
+elif confirm "Install Commit Mono (low-DPI font, enabled with 'gfont')?"; then
+  print_step "Installing font-commit-mono..."
+  if brew install --cask font-commit-mono; then
+    print_success "Commit Mono installed"
+  else
+    print_warning "Font install failed (continuing...)"
+  fi
+else
+  print_warning "Skipping Commit Mono ('gfont' will have nothing to switch to)"
 fi
 
 # ─── fzf Key Bindings ───────────────────────────────────────────────────────
