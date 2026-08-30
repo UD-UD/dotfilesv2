@@ -380,9 +380,26 @@ It deploys automatically — `etc/symlink_dotfiles.sh` symlinks every entry in
 without any installer changes. Key points:
 - **Font**: `SF Mono` primary + `Symbols Nerd Font Mono` fallback (repeated
   `font-family` lines). SF Mono has no icon glyphs; the fallback supplies the
-  Nerd Font icons used by eza/starship/git. Install the font via
-  `brew install font-symbols-only-nerd-font` (offered by `install/install.sh`).
-- **Theme**: `Catppuccin Mocha` (built-in; exact name from `ghostty +list-themes`).
+  Nerd Font icons used by eza/starship/git. Install both fonts via
+  `brew install --cask font-symbols-only-nerd-font font-commit-mono`
+  (offered by `install/install.sh`).
+- **Low-DPI font toggle (`gfont`)**: SF Mono is tuned for Retina and renders
+  unevenly at ~109 PPI — macOS dropped subpixel antialiasing in Mojave and SF
+  Mono carries almost no low-DPI hinting. `gfont` (in `terminal/ghostty.sh`)
+  writes `font-override.conf` next to the config, swapping in CommitMono plus
+  `font-thicken`; running it again removes the file. The main config ends with
+  `config-file = ?font-override.conf` — `?` means "ignore if missing", and an
+  included file loads *after* its includer, so the override wins. Because
+  `font-family` is a repeatable key, the override must reset the list with a
+  bare `font-family =` first, or it would only append. The override file is
+  gitignored (machine-specific) and the change needs a config reload (`⌘⇧,`),
+  which applies to every window — Ghostty has no per-session font mechanism.
+  Note CommitMono does not show in `ghostty +list-fonts` (its PANOSE table
+  omits the monospace flag) but resolves by name; check with `ghostty
+  +show-face`.
+- **Theme**: `vscode-dark-2026` from `home/.config/ghostty/themes/`. Built-in
+  themes are selectable by their exact name from `ghostty +list-themes`; `gtheme`
+  switches a live session without a reload (see `terminal/ghostty.sh`).
 - **`macos-option-as-alt = true`**: required so the Option key sends Alt —
   otherwise fzf's `Alt+C` and the emacs Alt-word bindings in `terminal/start.sh`
   break (Option would insert composed characters like é/ç).
