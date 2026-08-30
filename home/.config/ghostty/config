@@ -29,6 +29,22 @@ window-padding-y = 10
 # Reopen previous windows/tabs/splits on launch
 window-save-state = always
 
+# ─── Splits ─────────────────────────────────────────────────────────────────
+# Ghostty has no per-pane border — the only chrome between panes is a 1px
+# divider line. Left at its default it picks a low-contrast grey that vanishes
+# against the dark theme, so with 3+ panes it's hard to see where one ends.
+# This mid grey gives every pane a visible edge without shouting; #FFFFFF is
+# the louder option if it still reads too faint.
+split-divider-color = #8A8A8A
+
+# The divider tells you where the boundary is; these two tell you which side of
+# it has focus. Unfocused splits get a semi-transparent rectangle drawn over
+# them — `fill` is that rectangle's color, `opacity` is how much of the split
+# still shows through (1 = no dimming). Pulled down from the 0.7 default so the
+# focused pane is unmistakable at a glance.
+unfocused-split-opacity = 0.55
+unfocused-split-fill = #000000
+
 # ─── macOS / keybinding correctness ─────────────────────────────────────────
 # Critical for this dotfiles setup: make the Option key send Alt instead of
 # inserting composed characters (é, ç, ...). Without this, fzf's Alt+C
