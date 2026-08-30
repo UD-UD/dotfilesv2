@@ -32,7 +32,7 @@ fi
 
 [ -z "$model" ] && model="unknown"
 
-out="\033[2m${model} | ${dir_display}"
+out="${model} | ${dir_display}"
 [ -n "$branch" ] && out="${out} | ${branch}"
 out="${out} | Context: ${context_display}\033[0m"
 
