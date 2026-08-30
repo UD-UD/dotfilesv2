@@ -7,11 +7,13 @@
 # Validate after edits: `ghostty +validate-config`
 
 # ─── Font ───────────────────────────────────────────────────────────────────
-# SF Mono is Apple's monospace font (clean, native macOS feel).
+# SF Mono is Apple's monospace font (clean, native macOS feel). It is tuned for
+# Retina and reads well on the 4K; on the 109 PPI panel run `gfont` to swap in
+# CommitMono, which is hinted for low DPI. See the override block at the bottom.
 font-family = SF Mono
 # SF Mono has no icon glyphs. Ghostty uses repeated font-family entries as
 # fallback, so eza/starship/git Nerd Font icons resolve from this symbols-only
-# font. Install via: brew install font-symbols-only-nerd-font
+# font. Install via: brew install --cask font-commit-mono font-symbols-only-nerd-font
 font-family = Symbols Nerd Font Mono
 font-size = 14
 
@@ -28,6 +30,22 @@ window-padding-x = 10
 window-padding-y = 10
 # Reopen previous windows/tabs/splits on launch
 window-save-state = always
+
+# ─── Splits ─────────────────────────────────────────────────────────────────
+# Ghostty has no per-pane border — the only chrome between panes is a 1px
+# divider line. Left at its default it picks a low-contrast grey that vanishes
+# against the dark theme, so with 3+ panes it's hard to see where one ends.
+# This mid grey gives every pane a visible edge without shouting; #FFFFFF is
+# the louder option if it still reads too faint.
+split-divider-color = #8A8A8A
+
+# The divider tells you where the boundary is; these two tell you which side of
+# it has focus. Unfocused splits get a semi-transparent rectangle drawn over
+# them — `fill` is that rectangle's color, `opacity` is how much of the split
+# still shows through (1 = no dimming). Pulled down from the 0.7 default so the
+# focused pane is unmistakable at a glance.
+unfocused-split-opacity = 0.55
+unfocused-split-fill = #000000
 
 # ─── macOS / keybinding correctness ─────────────────────────────────────────
 # Critical for this dotfiles setup: make the Option key send Alt instead of
@@ -46,3 +64,12 @@ shell-integration-features = cursor,sudo,title
 mouse-hide-while-typing = true
 copy-on-select = clipboard
 confirm-close-surface = false
+
+# ─── Low-DPI font override ──────────────────────────────────────────────────
+# Written and removed by `gfont` (terminal/ghostty.sh). Present = CommitMono +
+# thickening for the 109 PPI panel; absent = the SF Mono default above.
+# The ? prefix means "ignore if missing", and an included file is loaded *after*
+# this one, so its values win. font-family is a repeatable key, so the override
+# has to reset the list with an empty `font-family =` before re-adding entries -
+# otherwise it would only append and SF Mono would stay first in the chain.
+config-file = ?font-override.conf
