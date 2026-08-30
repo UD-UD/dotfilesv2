@@ -10,14 +10,28 @@
 setopt NO_RM_STAR_SILENT      # Ask for confirmation on rm *
 setopt INTERACTIVE_COMMENTS   # Allow comments in interactive shells
 
+# ─── Early Local Overrides ─────────────────────────────────────────────────
+# Load local config FIRST to allow custom Homebrew paths and other settings
+# This ensures your custom configurations take precedence
+[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
+
+# ─── Early Secrets Loading ─────────────────────────────────────────────────
+# Load secrets early for tools that need them during initialization
+[[ -f "$HOME/.secrets" ]] && source "$HOME/.secrets"
+
 # ─── Homebrew ───────────────────────────────────────────────────────────────
-# Detect and initialize Homebrew (Apple Silicon or Intel)
-if [[ -f "/opt/homebrew/bin/brew" ]]; then
-  eval "$(/opt/homebrew/bin/brew shellenv)" 2>/dev/null || true
-elif [[ -f "/usr/local/bin/brew" ]]; then
-  eval "$(/usr/local/bin/brew shellenv)" 2>/dev/null || true
-elif [[ -f "$HOME/homebrew/bin/brew" ]]; then
-  eval "$($HOME/homebrew/bin/brew shellenv)" 2>/dev/null || true
+# Detect and initialize Homebrew (Apple Silicon, Intel, or custom location)
+# IMPORTANT: Only initialize if brew is not already available
+# This preserves custom Homebrew installations set in ~/.zshrc.local
+if ! command -v brew &>/dev/null && [[ -z "$HOMEBREW_PREFIX" ]]; then
+  # Try common Homebrew locations only if brew not found
+  if [[ -f "/opt/homebrew/bin/brew" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)" 2>/dev/null || true
+  elif [[ -f "/usr/local/bin/brew" ]]; then
+    eval "$(/usr/local/bin/brew shellenv)" 2>/dev/null || true
+  elif [[ -f "$HOME/homebrew/bin/brew" ]]; then
+    eval "$($HOME/homebrew/bin/brew shellenv)" 2>/dev/null || true
+  fi
 fi
 
 # ─── Dotfiles Path ──────────────────────────────────────────────────────────
@@ -225,13 +239,6 @@ function diff() {
 
 # Terminal settings
 stty icrnl  # Fixes <Return> key issues with some keyboards
-
-# ─── Secrets (API keys, tokens) ────────────────────────────────────────────
-[[ -f "$HOME/.secrets" ]] && source "$HOME/.secrets"
-
-# ─── Local Overrides ────────────────────────────────────────────────────────
-# Source local customizations (not tracked in git)
-[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
 
 # ─── Profiling (uncomment to debug slow startup) ────────────────────────────
 # zprof
